@@ -3,6 +3,7 @@ package networker
 import (
 	"bytes"
 	"fmt"
+
 	"net"
 )
 
@@ -16,7 +17,6 @@ func New(hostName string) *Worker {
 		panic(err)
 	}
 	conn, err := net.DialTCP("tcp", nil, tcpAddr)
-	defer conn.Close()
 	if err != nil {
 		panic(conn)
 	}
@@ -27,6 +27,7 @@ func New(hostName string) *Worker {
 }
 
 func (w *Worker) Writer(bb bytes.Buffer) {
+	defer w.Conn.Close()
 	_, err := w.Conn.Write(bb.Bytes())
 	if err != nil {
 		fmt.Println(err)
@@ -34,6 +35,5 @@ func (w *Worker) Writer(bb bytes.Buffer) {
 }
 
 func (w *Worker) Reader() bytes.Buffer {
-
-	w.Conn.re
+	return bytes.Buffer{}
 }
