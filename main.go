@@ -39,10 +39,14 @@ func main() {
 		ctrl.Writer(bbytes)
 	} else if *port != "" {
 		fmt.Println("get file")
-		var s = server.Server{}
+		s := &server.Server{
+			Conn: make(chan net.Conn),
+		}
+
 		go s.Run(*port)
 		ctrl = s
 		for {
+			fmt.Println("begin for")
 			bb := ctrl.Reader()
 			internal.Defaultbuffer.PutBytesbufferToFile(bb.Bytes())
 		}
