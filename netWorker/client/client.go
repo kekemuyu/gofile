@@ -21,7 +21,7 @@ func New(hostname string) *Client {
 	}
 }
 
-func (c *Client) Writer(bb bytes.Buffer) {
+func (c *Client) Write(bb bytes.Buffer) {
 	defer c.Conn.Close()
 	_, err := c.Conn.Write(bb.Bytes())
 	if err != nil {
@@ -29,6 +29,6 @@ func (c *Client) Writer(bb bytes.Buffer) {
 	}
 }
 
-func (c *Client) Reader() bytes.Buffer {
+func (c *Client) Read() bytes.Buffer {
 	return bytes.Buffer{}
 }

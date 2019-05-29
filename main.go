@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"flag"
 	"fmt"
 	"net"
@@ -9,48 +8,40 @@ import (
 	"test/fileTest2/gofile/internal"
 	"test/fileTest2/gofile/networker/client"
 	"test/fileTest2/gofile/networker/server"
+	"test/fileTest2/gofile/pipe"
 )
 
 var f = flag.String("f", "test.txt", "input the file name")
 var hostname = flag.String("s", "", "input server ip")
 var port = flag.String("p", "", "input server port")
 
-type Control interface {
-	Reader() bytes.Buffer
-	Writer(bb bytes.Buffer)
-}
-
-type Control2 interface {
-	Reader(*net.Conn) bytes.Buffer
-}
-
 func init() {
 	flag.Parse()
 }
 
 func main() {
-	var ctrl Control
+	var ctrl pipe.Control
 	if *hostname != "" {
 		fmt.Println("send file")
 		c := client.New(*hostname)
-		bbytes := internal.Defaultbuffer.GetBytesbuffer(*f)
-
 		ctrl = c
-		ctrl.Writer(bbytes)
+		bbytes := internal.Defaultbuffer.GetBytesbuffer(*f)
+		ctrl.Write(bbytes)
 	} else if *port != "" {
 		fmt.Println("get file")
 		s := &server.Server{
 			Conn: make(chan net.Conn),
 		}
 
-		go s.Run(*port)
 		ctrl = s
+		go s.Run(*port)
 		for {
 			fmt.Println("begin for")
-			bb := ctrl.Reader()
+			bb := ctrl.Read()
 			internal.Defaultbuffer.PutBytesbufferToFile(bb.Bytes())
 		}
-
+	} else {
+		fmt.Println("Please input gofile -h for help")
 	}
 
 }

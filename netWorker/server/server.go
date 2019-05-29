@@ -30,7 +30,7 @@ func (s *Server) Run(addr string) {
 
 }
 
-func (s *Server) Reader() bytes.Buffer {
+func (s *Server) Read() bytes.Buffer {
 	fmt.Println("server")
 
 	conn := <-s.Conn
@@ -50,4 +50,4 @@ func (s *Server) Reader() bytes.Buffer {
 
 }
 
-func (s *Server) Writer(bytes.Buffer) {}
+func (s *Server) Write(bytes.Buffer) {}
