@@ -9,11 +9,14 @@ import (
 	"test/fileTest2/gofile/networker/client"
 	"test/fileTest2/gofile/networker/server"
 	"test/fileTest2/gofile/pipe"
+	"test/fileTest2/gofile/serialworker"
 )
 
-var f = flag.String("f", "test.txt", "input the file name")
+var file = flag.String("f", "test.txt", "input the file name")
 var hostname = flag.String("s", "", "input server ip")
 var port = flag.String("p", "", "input server port")
+var com = flag.String("c", "", "input com port")
+var mode = flag.String("m", "", "input r or s for recieve or send ")
 
 func init() {
 	flag.Parse()
@@ -25,7 +28,11 @@ func main() {
 		fmt.Println("send file")
 		c := client.New(*hostname)
 		ctrl = c
-		bbytes := internal.Defaultbuffer.GetBytesbuffer(*f)
+		if *file == "" {
+			fmt.Println("input the file name with -f ")
+			return
+		}
+		bbytes := internal.Defaultbuffer.GetBytesbuffer(*file)
 		ctrl.Write(bbytes)
 	} else if *port != "" {
 		fmt.Println("get file")
@@ -40,6 +47,27 @@ func main() {
 			bb := ctrl.Read()
 			internal.Defaultbuffer.PutBytesbufferToFile(bb.Bytes())
 		}
+	} else if (*com != "") && (*mode != "") {
+		fmt.Println("opened com port is:", *com)
+		w := serialworker.New(*com)
+		ctrl = w
+		if *mode == "s" {
+			if *file == "" {
+				fmt.Println("input the file name with -f ")
+				return
+			}
+			bbytes := internal.Defaultbuffer.GetBytesbuffer(*file)
+			ctrl.Write(bbytes)
+		} else if *mode == "r" {
+			for {
+				bb := ctrl.Read()
+				internal.Defaultbuffer.PutBytesbufferToFile(bb.Bytes())
+
+			}
+		} else {
+			fmt.Println("input the serial mode  with -r or -s ")
+		}
+
 	} else {
 		fmt.Println("Please input gofile -h for help")
 	}
