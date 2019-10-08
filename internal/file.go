@@ -16,6 +16,8 @@ type Fileman struct {
 	Writeoffset  int64
 }
 
+var Default = Fileman{}
+
 func Openfile(filename string) (f Fileman, err error) {
 
 	f.File, err = os.Open(filename)

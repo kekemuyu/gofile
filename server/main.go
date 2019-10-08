@@ -2,7 +2,7 @@ package main
 
 import (
 	"gofile/config"
-	"gofile/internal"
+	"gofile/handler"
 	_ "gofile/log"
 
 	"gofile/server/com"
@@ -34,10 +34,10 @@ func main() {
 	if err != nil {
 		logger.Error("打开串口错误：", err)
 	} else {
+		go handler.HandleLoop(defaultCom) //start comm server
 		logger.Debug(defaultCom)
 	}
 
-	net.DefaultServer.Run(netport)
-	internal.HandleLoop(net.DefaultServer)
+	net.DefaultServer.Run(netport) //start net server
 
 }

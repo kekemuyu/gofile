@@ -1,23 +1,21 @@
-package internal
+package handler
 
 import (
 	"gofile/msg"
+	"io"
 
 	"github.com/donnie4w/go-logger/logger"
 )
 
-type IO interface {
-	Read(b []byte) (n int, err error)
-	Write(b []byte) (n int, err error)
-	ReadHandle(msg msg.Msg)
+type Handler struct {
 }
 
-func HandleLoop(io IO) {
+func HandleLoop(rwc io.ReadWriteCloser) {
 	tmpb := make([]byte, 8)
 	var message msg.Msg
 	for {
 
-		_, err := io.Read(tmpb)
+		_, err := rwc.Read(tmpb)
 		if err != nil {
 			logger.Error("read head err:", err)
 			continue
@@ -28,12 +26,11 @@ func HandleLoop(io IO) {
 		}
 
 		message.Data = make([]byte, message.Datalen)
-		_, err = io.Read(message.Data)
+		_, err = rwc.Read(message.Data)
 		if err != nil {
 			logger.Error("read data err:", err)
 			continue
 		}
-		go io.ReadHandle(message)
 
 	}
 }

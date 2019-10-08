@@ -1,7 +1,7 @@
 package log
 
 import (
-	"jlbox/config"
+	"gofile/config"
 
 	"github.com/donnie4w/go-logger/logger"
 )
