@@ -12,7 +12,7 @@ type Msg struct {
 	Data    []byte
 }
 
-func (m *Msg) Pack(msg Msg) (b []byte, err error) {
+func Pack(msg Msg) (b []byte, err error) {
 	dataBuff := bytes.NewBuffer([]byte{})
 
 	//写msgID
@@ -33,7 +33,7 @@ func (m *Msg) Pack(msg Msg) (b []byte, err error) {
 	return dataBuff.Bytes(), nil
 }
 
-func (m *Msg) Unpack(b []byte) (msg Msg, err error) {
+func Unpack(b []byte) (msg Msg, err error) {
 
 	//创建一个从输入二进制数据的ioReader
 	dataBuff := bytes.NewReader(b)

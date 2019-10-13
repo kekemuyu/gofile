@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"bytes"
+	"encoding/binary"
 	"encoding/json"
 	"gofile/config"
 	"gofile/filehandler"
@@ -26,12 +28,13 @@ func HandleLoop(rwc io.ReadWriteCloser) {
 	tmpb := make([]byte, 8)
 	var message msg.Msg
 	for {
+
 		_, err := rwc.Read(tmpb)
 		if err != nil {
 			logger.Error("read head err:", err)
 			continue
 		}
-		if message, err = message.Unpack(tmpb); err != nil {
+		if message, err = msg.Unpack(tmpb); err != nil {
 			logger.Error("unpack msg err:", err)
 			continue
 		}
@@ -42,12 +45,12 @@ func HandleLoop(rwc io.ReadWriteCloser) {
 			logger.Error("read data err:", err)
 			continue
 		}
-
+		parseMsg(message, rwc)
 	}
 }
 
 //procol magnage
-func parseMsg(msg msg.Msg) {
+func parseMsg(msg msg.Msg, rwc io.ReadWriteCloser) {
 	switch msg.Id {
 	case List:
 		logger.Debug("df")
@@ -102,9 +105,66 @@ func uploadbody(data []byte) {
 	}
 }
 
-func downloadhead(data []byte) {
+func downloadhead(data []byte, rwc io.ReadWriteCloser) {
+	name := string(data) //filename
+	var err error
+	if filehandler.DefaultDownload.Filehandler, err = os.Open(name); err != nil {
+		logger.Error(err)
+		return
+	}
 
+	var fileInfo os.FileInfo
+	if fileInfo, err = filehandler.DefaultDownload.Filehandler.Stat(); err != nil {
+		logger.Error(err)
+		return
+	}
+
+	filehandler.DefaultDownload.Size = fileInfo.Size()
+	var outmsg msg.Msg
+	dataBuff := bytes.NewBuffer([]byte{})
+
+	if err := binary.Write(dataBuff, binary.LittleEndian, filehandler.DefaultDownload.Size); err != nil {
+		logger.Error(err)
+		return
+	}
+	outmsg.Data = dataBuff.Bytes()
+	outmsg.Id = Downloadhead
+	outmsg.Datalen = uint32(len(outmsg.Data))
+
+	outbytes, _ := msg.Pack(outmsg)
+	rwc.Write(outbytes)
+	filehandler.DefaultDownload.Off = 0
+	filehandler.DefaultDownload.Blocksize = 1024
+	filehandler.DefaultDownload.Blocknum = filehandler.DefaultDownload.Size / filehandler.DefaultDownload.Blocksize
+	filehandler.DefaultDownload.Lastpacksize = filehandler.DefaultDownload.Size % filehandler.DefaultDownload.Blocksize
 }
-func downloadbody(data []byte) {
 
+func downloadbody(rwc io.ReadWriteCloser) {
+	var outmsg msg.Msg
+	outmsg.Id = Downloadbody
+
+	for i := 0; i < int(filehandler.DefaultDownload.Blocknum); i++ {
+		_, err := filehandler.DefaultDownload.Filehandler.ReadAt(outmsg.Data, filehandler.DefaultDownload.Off)
+		if err != nil {
+			logger.Error(err)
+			filehandler.DefaultDownload.Filehandler.Close()
+			rwc.Close()
+			return
+		}
+		filehandler.DefaultDownload.Off += filehandler.DefaultDownload.Blocksize
+		outbytes, _ := msg.Pack(outmsg)
+		_, err = rwc.Write(outbytes)
+		if err != nil {
+			rwc.Close()
+			return
+		}
+	}
+	if filehandler.DefaultDownload.Lastpacksize > 0 {
+		filehandler.DefaultDownload.Filehandler.ReadAt(outmsg.Data, filehandler.DefaultDownload.Off)
+		outbytes, _ := msg.Pack(outmsg)
+		rwc.Write(outbytes)
+		filehandler.DefaultDownload.Filehandler.Close()
+		return //
+
+	}
 }
