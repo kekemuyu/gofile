@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		 <meta http-equiv="Content-Type" content="text/html; charset=utf8" />
+		<title>gofile</title>
+		<link rel="stylesheet" href="./bootstrap-3.3.7/css/bootstrap.min.css">
+		<script type="text/javascript" src="./js/jquery.min.js"></script>
+		<script type="text/javascript" src="./bootstrap-3.3.7/js/bootstrap.min.js"></script>
+	</head>
+
+	<body >
+		<nav class="navbar navbar-default navbar-fixed-top" style="background-color: #009966;">
+			<div class="container navbar-left">
+				<div class="navbar-header">
+					<!--<a class="navbar-brand " href="#">
+						<img src="img/rtlogo.png" width="25px" height="25px" onclick="menu()">
+					</a>-->
+					<text class="navbar-text" style="color: white;font-size: 20px;">gofile文件管理器</text>
+
+					<text id="linkStat" class="navbar-text" style="color: white;font-size: 20px;"></text>
+		
+				</div>
+
+			</div>
+		</nav>
+		<div  id="contentDis " style="padding: 50px; ">
+			<h3>串口配置</h3>
+			<div class="row">
+				
+				<div class="col-sm-4">
+					<label for="inputCode">串口号:</label>
+					<input type="text" id="codeid" placeholder="">
+				</div>
+				<div class="col-sm-4">
+					<label for="inputCode">波特率:</label>
+					<input id="date" placeholder="......">
+				</div>
+				<div class="col-sm-4">
+					<button class=" btn btn-default " type="button" id="btnset">打开</button>
+					<button class=" btn btn-default " type="button" id="btnset">关闭</button>
+				</div>
+				
+			</div>
+			<h3>网络配置</h3>
+			<div class="row">
+				
+				<div class="col-sm-4">
+					<label for="inputCode">服务器地址:</label>
+					<input type="text" id="codeid" placeholder="">
+				</div>
+				<div class="col-sm-4">
+					<label for="inputCode">服务器端口号:</label>
+					<input id="date" placeholder="......">
+				</div>
+				<div class="col-sm-4">
+					<button class=" btn btn-default " type="button" id="btnset">连接</button>
+					<button class=" btn btn-default " type="button" id="btnset">断开</button>
+				</div>
+				
+			</div>
+            
+            <button class=" btn btn-default " type="button" id="btnset">刷新</button>
+			<button class=" btn btn-default " type="button" id="btnset">上传</button>
+			<button class=" btn btn-default " type="button" id="btnset">下载</button>
+			<!-- <button class=" btn btn-default " type="button" id="btnset">断开</button> -->
+			<div class="row">
+				<div class="col-sm-6 panel panel-default" style="height: 1000px">
+					<div class="panel-body">
+						<ul>
+					    <li>语文</li>
+					    <li>数学</li>
+					    <li>英语</li>
+					</ul>
+					</div>
+					
+				</div>
+				<div class="col-sm-6 panel panel-default" style="height: 1000px">
+					<div class="panel-body">
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+   
+	<script type="text/javascript ">
+		
+		window.onload = function() {
+		
+		}
+
+		
+	
+	</script>
+
+</html>
