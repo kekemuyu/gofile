@@ -22,35 +22,44 @@ const (
 )
 
 type Handler struct {
+	Rwc io.ReadWriteCloser
 }
 
-func HandleLoop(rwc io.ReadWriteCloser) {
+func (h *Handler) HandleLoop() {
 	tmpb := make([]byte, 8)
 	var message msg.Msg
 	for {
 
-		_, err := rwc.Read(tmpb)
+		n, err := h.Rwc.Read(tmpb)
+		if n <= 0 {
+			continue
+		}
 		if err != nil {
 			logger.Error("read head err:", err)
 			continue
 		}
+
 		if message, err = msg.Unpack(tmpb); err != nil {
 			logger.Error("unpack msg err:", err)
 			continue
 		}
 
 		message.Data = make([]byte, message.Datalen)
-		_, err = rwc.Read(message.Data)
-		if err != nil {
+		n, err = h.Rwc.Read(message.Data)
+		if n <= 0 {
 			logger.Error("read data err:", err)
 			continue
 		}
-		parseMsg(message, rwc)
+		h.parseMsg(message)
 	}
 }
 
+func (h *Handler) Send(data []byte) {
+	h.Rwc.Write(data)
+}
+
 //procol magnage
-func parseMsg(msg msg.Msg, rwc io.ReadWriteCloser) {
+func (h *Handler) parseMsg(msg msg.Msg) {
 	switch msg.Id {
 	case List:
 		logger.Debug("df")

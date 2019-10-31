@@ -18,6 +18,6 @@ func main() {
 	// b, err := msg.Pack(msg)
 	// logger.Debug(b)
 	// conn.Write(b)
-	myweb := New(800, 600)
+	myweb := New(1000, 750)
 	myweb.Run()
 }

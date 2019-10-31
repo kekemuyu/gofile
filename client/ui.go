@@ -37,7 +37,8 @@ func (m *Myweb) Run() {
 		log.Debug("UI is ready")
 	})
 
-	//	ui.Bind("testdis", dis)
+	ui.Bind("opencom", Opencom)
+	ui.Bind("sendmsg", Sendmsg)
 	//	ui.Bind("openSerial", New)
 	//	ui.Bind("closeSerial", closeSerial)
 	//	ui.Bind("send", send)

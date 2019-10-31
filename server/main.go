@@ -5,7 +5,7 @@ import (
 	"gofile/handler"
 	_ "gofile/log"
 
-	"gofile/server/com"
+	"gofile/com"
 	"gofile/server/net"
 	"runtime"
 
@@ -34,7 +34,10 @@ func main() {
 	if err != nil {
 		logger.Error("打开串口错误：", err)
 	} else {
-		go handler.HandleLoop(defaultCom) //start comm server
+		hlr := handler.Handler{
+			Rwc: defaultCom,
+		}
+		go hlr.HandleLoop() //start comm server
 		logger.Debug(defaultCom)
 	}
 

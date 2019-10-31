@@ -28,7 +28,10 @@ func (s *Server) Run(addr string) {
 			continue
 		}
 		logger.Debug("有一个客户端上线：", conn.RemoteAddr().String())
-		go handler.HandleLoop(conn) //客户端连接处理，读写数据
+		hlr := handler.Handler{
+			Rwc: conn,
+		}
+		go hlr.HandleLoop() //客户端连接处理，读写数据
 	}
 
 }
