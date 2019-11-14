@@ -52,11 +52,26 @@
             </div>
         </div>
         <hr>
-        <button class=" btn btn-default " type="button" id="btnset">刷新</button>
-        <button class=" btn btn-default " type="button" id="btnset">上传</button>
-        <button class=" btn btn-default " type="button" id="btnset">下载</button>
-        <!-- <button class=" btn btn-default " type="button" id="btnset">断开</button> -->
+        <button class=" btn btn-default " type="button" id="btnlist">刷新</button>
         <div class="row">
+            <div class="col-sm-2">
+                <input id="uploadpath" type="file" name="">
+            </div>
+            <div class="col-sm-6">
+                <button class=" btn btn-default " type="button" id="btnupload">上传</button>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="col-sm-2">
+                <input type="text" id="downloadname" name="">
+            </div>
+            <div class="col-sm-6">
+                <button class=" btn btn-default " type="button" id="btndownload">下载</button>
+            </div>
+        </div>
+        <!-- <button class=" btn btn-default " type="button" id="btnset">断开</button> -->
+        <!-- <div class="row">
             <div class="col-sm-6 panel panel-default" style="height: 1000px">
                 <div class="panel-body">
                     <ul>
@@ -70,7 +85,7 @@
                 <div class="panel-body">
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 </body>
 <script type="text/javascript ">
@@ -93,9 +108,28 @@ $('#btnComOpen').click(async function() {
     }
 
 });
+
+$('#bntlist').click(async function() {
+    console.log('btnlist:');
+    await list();
+});
+
 $('#btnComClose').click(function() {
     console.log('btnclose');
 
+});
+
+$('#btnupload').click(async function() {
+    path = $('#uploadpath').val();
+    console.log('btnupload', path);
+
+    await upload(path);
+});
+
+$('#btndownload').click(async function() {
+    name = $('#downloadname').val();
+    console.log('btndownload', name);
+    await download(name);
 });
 </script>P
 

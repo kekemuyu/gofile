@@ -29,3 +29,15 @@ func Sendmsg(message msg.Msg) {
 	}
 	hlr.Send(bs)
 }
+
+func Upload(path string) {
+	msg = msg.Msg{
+		Id:      handler.Uploadhead,
+		Datalen: 0,
+	}
+	Sendmsg(msg)
+}
+
+func Download(name string) {
+
+}

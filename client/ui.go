@@ -39,6 +39,8 @@ func (m *Myweb) Run() {
 
 	ui.Bind("opencom", Opencom)
 	ui.Bind("sendmsg", Sendmsg)
+	ui.Bind("upload", Upload)
+	ui.Bind("download", Download)
 	//	ui.Bind("openSerial", New)
 	//	ui.Bind("closeSerial", closeSerial)
 	//	ui.Bind("send", send)
