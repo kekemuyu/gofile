@@ -14,8 +14,8 @@
         <div class="container navbar-left">
             <div class="navbar-header">
                 <!--<a class="navbar-brand " href="#">
-						<img src="img/rtlogo.png" width="25px" height="25px" onclick="menu()">
-					</a>-->
+                        <img src="img/rtlogo.png" width="25px" height="25px" onclick="menu()">
+                    </a>-->
                 <text class="navbar-text" style="color: white;font-size: 20px;">gofile文件管理器</text>
                 <text id="linkStat" class="navbar-text" style="color: white;font-size: 20px;"></text>
             </div>
@@ -25,11 +25,11 @@
         <div class="row">
             <div class="col-sm-4">
                 <label for="inputCode">串口号:</label>
-                <input type="text" id="comNum" placeholder="">
+                <input type="text" id="comNum" placeholder="" value="com1">
             </div>
             <div class="col-sm-4">
                 <label for="inputCode">波特率:</label>
-                <input id="baudrate">
+                <input id="baudrate" value="115200">
             </div>
             <div class="col-sm-4">
                 <button class=" btn btn-default " type="button" id="btnComOpen">打开</button>
@@ -40,11 +40,11 @@
         <div class="row">
             <div class="col-sm-4">
                 <label for="inputCode">服务器地址:</label>
-                <input type="text" id="codeid" placeholder="">
+                <input type="text" id="codeid" placeholder="" value="127.0.0.1">
             </div>
             <div class="col-sm-4">
                 <label for="inputCode">服务器端口号:</label>
-                <input id="date">
+                <input id="date" value="9000">
             </div>
             <div class="col-sm-4">
                 <button class=" btn btn-default " type="button" id="btnset">连接</button>
@@ -53,17 +53,19 @@
         </div>
         <hr>
         <button class=" btn btn-default " type="button" id="btnlist">刷新</button>
+        <hr />
         <div class="row">
-            <div class="col-sm-2">
-                <input id="uploadpath" type="file" name="">
+            <div class="col-sm-3">
+                <input id="uploadpath" type="text" name="">
             </div>
             <div class="col-sm-6">
+                 <button class=" btn btn-default " type="button" id="btnselect">选择</button>
                 <button class=" btn btn-default " type="button" id="btnupload">上传</button>
             </div>
         </div>
         <hr />
         <div class="row">
-            <div class="col-sm-2">
+            <div class="col-sm-3">
                 <input type="text" id="downloadname" name="">
             </div>
             <div class="col-sm-6">
@@ -88,11 +90,53 @@
         </div> -->
     </div>
 </body>
-<script type="text/javascript ">
-window.onload = function() {
+<!-- Modal -->
+<div class="modal fade" id="selectModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySelectModalLabel">打开文件</h4>
+            </div>
+            <div class="modal-body">
+                <div class="pre-scrollable">
+                    <ul class="list-group" id="filesgroup" style="list-style-type:none">
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="row">
+                    <div class="col-sm-6">
+                        文件名：<em id="selectdis"></em>
+                    </div>
+                    <div class="col-sm-6">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary" id="btnPageup">向上</button>
+                        <button id="btnfileopen" type="button" class="btn btn-primary" >打开</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+var selectname = "";
+$(document).ready(function() {
 
-}
+    $('#filesgroup').on("click", "li", function() {
+        $('#filesgroup').find('li').css('background-color', 'white');
+        $(this).css('background-color', '#e2f5ff');
+        console.log($(this).text());
+        selectname = $(this).text();
+        $('#selectdis').text(selectname);
+      
+    })
+});
 
+
+$('#btnfileopen').click(function(){
+  $('#uploadpath').val(selectname);
+   $('#selectModal').modal('hide');
+});
 
 $('#btnComOpen').click(async function() {
 
@@ -119,11 +163,15 @@ $('#btnComClose').click(function() {
 
 });
 
-$('#btnupload').click(async function() {
-    path = $('#uploadpath').val();
-    console.log('btnupload', path);
+$('#btnselect').click(async function(){
+ $('#selectModal').modal();
+ await browsecurpath();
+});
 
-    await upload(path);
+$('#btnupload').click(async function() {
+   
+    console.log('btnupload');
+    await upload(selectname);
 });
 
 $('#btndownload').click(async function() {
@@ -131,6 +179,6 @@ $('#btndownload').click(async function() {
     console.log('btndownload', name);
     await download(name);
 });
-</script>P
+</script>
 
 </html>

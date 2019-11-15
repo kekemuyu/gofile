@@ -34,13 +34,14 @@ func main() {
 	if err != nil {
 		logger.Error("打开串口错误：", err)
 	} else {
+		logger.Debug("打开串口：", portName)
 		hlr := handler.Handler{
 			Rwc: defaultCom,
 		}
 		go hlr.HandleLoop() //start comm server
 		logger.Debug(defaultCom)
 	}
-
+	logger.Debug("net serve:", netport)
 	net.DefaultServer.Run(netport) //start net server
 
 }

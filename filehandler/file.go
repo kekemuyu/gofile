@@ -20,7 +20,7 @@ type Handler struct {
 	Lastpacksize int64
 }
 
-var DefaultUpload, DefaultDownload *Handler
+var DefaultUpload, DefaultDownload Handler
 
 func (f *Fileinfo) pack() {
 	// os.Create()

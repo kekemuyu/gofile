@@ -1,9 +1,16 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"gofile/com"
+	"gofile/config"
 	"gofile/handler"
 	"gofile/msg"
+	"io/ioutil"
+	"os"
+
+	// "path/filepath"
 
 	log "github.com/donnie4w/go-logger/logger"
 )
@@ -30,12 +37,83 @@ func Sendmsg(message msg.Msg) {
 	hlr.Send(bs)
 }
 
-func Upload(path string) {
-	msg = msg.Msg{
-		Id:      handler.Uploadhead,
-		Datalen: 0,
+func Browsecurpath() {
+	curpath := config.GetRootdir()
+	// files, _ := filepath.Glob(curpath)
+
+	files, _ := ioutil.ReadDir(curpath)
+	jsStr1 := `$("#filesgroup").find("li").remove()`
+	Defaultweb.UI.Eval(jsStr1)
+	for _, f := range files {
+		log.Debug(f.Name())
+
+		jsStr := fmt.Sprintf(`$('#filesgroup').append("<li>%s</li>")`, f.Name())
+		Defaultweb.UI.Eval(jsStr)
 	}
-	Sendmsg(msg)
+}
+
+func Upload(name string) {
+	log.Debug(name)
+	curpath := config.GetRootdir() + `\` + name
+
+	file, err := os.Open(curpath)
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	fileinfo, err := os.Stat(curpath)
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	type filehead struct {
+		Name string
+		Size int64
+	}
+
+	fhead := filehead{
+		Name: fileinfo.Name(),
+		Size: fileinfo.Size(),
+	}
+	log.Debug(fhead)
+	bs, _ := json.Marshal(fhead)
+	message := msg.Msg{
+		Id:      handler.Uploadhead,
+		Datalen: uint32(len(bs)),
+		Data:    bs,
+	}
+	log.Debug(message)
+	Sendmsg(message)
+
+	blocksize := fhead.Size / 1024
+	lastsize := fhead.Size % 1024
+	log.Debug(blocksize, lastsize)
+	if err != nil {
+		log.Fatal(err)
+	}
+	outbytes := make([]byte, 1024)
+
+	message = msg.Msg{
+		Id:      handler.Uploadbody,
+		Datalen: 1024,
+	}
+	for i := int64(0); i < blocksize; {
+		_, err = file.ReadAt(outbytes, i*1024)
+		if err != nil {
+			log.Error(err)
+			return
+		}
+		message.Data = outbytes
+		Sendmsg(message)
+
+	}
+	n, _ := file.ReadAt(outbytes, blocksize*1024)
+	if n > 0 {
+		message.Datalen = uint32(lastsize)
+		message.Data = outbytes[:lastsize]
+		Sendmsg(message)
+	}
+
 }
 
 func Download(name string) {

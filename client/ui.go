@@ -16,6 +16,8 @@ type Myweb struct {
 	UI lorca.UI
 }
 
+var Defaultweb Myweb
+
 func New(width, height int) Myweb {
 	var myweb Myweb
 	var err error
@@ -38,7 +40,7 @@ func (m *Myweb) Run() {
 	})
 
 	ui.Bind("opencom", Opencom)
-	ui.Bind("sendmsg", Sendmsg)
+	ui.Bind("browsecurpath", Browsecurpath)
 	ui.Bind("upload", Upload)
 	ui.Bind("download", Download)
 	//	ui.Bind("openSerial", New)

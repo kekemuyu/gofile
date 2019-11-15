@@ -1,0 +1,158 @@
+2019/11/15 10:08:12 main.go:18: debug Running with CPUs:6
+2019/11/15 10:08:12 main.go:22: debug app-version:v1.1.0
+2019/11/15 10:08:12 main.go:41: debug &{0xc000006050 340 {1 0} {0 0} 0xc0000a0e20 0xc0000a0e40}
+2019/11/15 10:08:29 main.go:18: debug Running with CPUs:6
+2019/11/15 10:08:29 main.go:22: debug app-version:v1.1.0
+2019/11/15 10:08:29 main.go:41: debug &{0xc000006058 312 {0 0} {0 0} 0xc0000a0e00 0xc0000a0e20}
+2019/11/15 10:09:02 handler.go:50: error read data err:<nil>
+2019/11/15 10:11:05 main.go:18: debug Running with CPUs:6
+2019/11/15 10:11:05 main.go:22: debug app-version:v1.1.0
+2019/11/15 10:11:05 main.go:41: debug &{0xc000006050 312 {1 0} {0 0} 0xc0000a0e00 0xc0000a0e20}
+2019/11/15 10:11:20 handler.go:71: debug 
+2019/11/15 10:53:54 main.go:18: debug Running with CPUs:6
+2019/11/15 10:53:54 main.go:22: debug app-version:v1.1.0
+2019/11/15 10:53:54 main.go:41: debug &{0xc000006050 328 {1 0} {0 0} 0xc0000a0e00 0xc0000a0e20}
+2019/11/15 11:00:41 handler.go:72: debug Uploadhead
+2019/11/15 11:04:38 main.go:18: debug Running with CPUs:6
+2019/11/15 11:04:38 main.go:22: debug app-version:v1.1.0
+2019/11/15 11:04:38 main.go:37: debug 打开串口：COM2
+2019/11/15 11:04:38 main.go:42: debug &{0xc0000b2010 312 {0 0} {0 0} 0xc0000ac140 0xc0000ac160}
+2019/11/15 11:04:38 main.go:44: debug net serve::9000
+2019/11/15 11:06:02 handler.go:72: debug Uploadhead
+2019/11/15 11:08:53 main.go:18: debug Running with CPUs:6
+2019/11/15 11:08:53 main.go:22: debug app-version:v1.1.0
+2019/11/15 11:08:53 main.go:37: debug 打开串口：COM2
+2019/11/15 11:08:53 main.go:42: debug &{0xc000006050 312 {0 0} {0 0} 0xc0000a0e20 0xc0000a0e40}
+2019/11/15 11:08:53 main.go:44: debug net serve::9000
+2019/11/15 11:09:08 handler.go:72: debug Uploadhead
+2019/11/15 11:12:03 main.go:18: debug Running with CPUs:6
+2019/11/15 11:12:03 main.go:22: debug app-version:v1.1.0
+2019/11/15 11:12:03 main.go:37: debug 打开串口：COM2
+2019/11/15 11:12:03 main.go:42: debug &{0xc000080048 312 {0 0} {0 0} 0xc0000b8b60 0xc0000b8b80}
+2019/11/15 11:12:03 main.go:44: debug net serve::9000
+2019/11/15 11:12:12 handler.go:72: debug Uploadhead
+2019/11/15 11:12:12 handler.go:106: debug {C:\fakepath\heidisql.exe 9153335}
+2019/11/15 11:14:41 main.go:18: debug Running with CPUs:6
+2019/11/15 11:14:41 main.go:22: debug app-version:v1.1.0
+2019/11/15 11:14:41 main.go:37: debug 打开串口：COM2
+2019/11/15 11:14:41 main.go:42: debug &{0xc000006050 308 {0 0} {0 0} 0xc0000a0e20 0xc0000a0e40}
+2019/11/15 11:14:41 main.go:44: debug net serve::9000
+2019/11/15 11:14:53 handler.go:72: debug Uploadhead
+2019/11/15 11:14:53 handler.go:106: debug {C:\fakepath\PineapplePi-F1_PCB_V2.rar 2716091}
+2019/11/15 11:18:38 main.go:18: debug Running with CPUs:6
+2019/11/15 11:18:38 main.go:22: debug app-version:v1.1.0
+2019/11/15 11:18:38 main.go:37: debug 打开串口：COM2
+2019/11/15 11:18:38 main.go:42: debug &{0xc000006050 296 {0 0} {0 0} 0xc00009ae20 0xc00009ae40}
+2019/11/15 11:18:38 main.go:44: debug net serve::9000
+2019/11/15 11:18:54 handler.go:72: debug Uploadhead
+2019/11/15 11:18:54 handler.go:106: debug {Backup of PCB8.PCB 148400}
+2019/11/15 11:19:03 main.go:18: debug Running with CPUs:6
+2019/11/15 11:19:03 main.go:22: debug app-version:v1.1.0
+2019/11/15 11:19:03 main.go:37: debug 打开串口：COM2
+2019/11/15 11:19:03 main.go:42: debug &{0xc000080048 312 {0 0} {0 0} 0xc0000b8b60 0xc0000b8b80}
+2019/11/15 11:19:03 main.go:44: debug net serve::9000
+2019/11/15 11:19:09 handler.go:72: debug Uploadhead
+2019/11/15 11:19:09 handler.go:106: debug {desktop.ini 282}
+2019/11/15 11:20:35 main.go:18: debug Running with CPUs:6
+2019/11/15 11:20:35 main.go:22: debug app-version:v1.1.0
+2019/11/15 11:20:35 main.go:37: debug 打开串口：COM2
+2019/11/15 11:20:35 main.go:42: debug &{0xc000006050 312 {0 0} {0 0} 0xc0000a0e20 0xc0000a0e40}
+2019/11/15 11:20:35 main.go:44: debug net serve::9000
+2019/11/15 11:20:37 handler.go:72: debug Uploadhead
+2019/11/15 11:20:37 handler.go:106: debug {desktop.ini 282}
+2019/11/15 11:23:45 main.go:18: debug Running with CPUs:6
+2019/11/15 11:23:45 main.go:22: debug app-version:v1.1.0
+2019/11/15 11:23:45 main.go:37: debug 打开串口：COM2
+2019/11/15 11:23:45 main.go:42: debug &{0xc000080040 312 {0 0} {0 0} 0xc0000b8b60 0xc0000b8b80}
+2019/11/15 11:23:45 main.go:44: debug net serve::9000
+2019/11/15 11:23:48 handler.go:72: debug Uploadhead
+2019/11/15 11:23:48 handler.go:106: debug {desktop.ini 282}
+2019/11/15 11:23:48 handler.go:108: debug F:\go_work\src\gofile/
+2019/11/15 11:25:00 main.go:18: debug Running with CPUs:6
+2019/11/15 11:25:00 main.go:22: debug app-version:v1.1.0
+2019/11/15 11:25:00 main.go:37: debug 打开串口：COM2
+2019/11/15 11:25:00 main.go:42: debug &{0xc000006058 312 {1 0} {0 0} 0xc0000a0e20 0xc0000a0e40}
+2019/11/15 11:25:00 main.go:44: debug net serve::9000
+2019/11/15 11:25:03 handler.go:72: debug Uploadhead
+2019/11/15 11:25:03 handler.go:106: debug {desktop.ini 282}
+2019/11/15 11:25:03 handler.go:108: debug F:\go_work\src\gofile\
+2019/11/15 11:26:48 main.go:18: debug Running with CPUs:6
+2019/11/15 11:26:48 main.go:22: debug app-version:v1.1.0
+2019/11/15 11:26:48 main.go:37: debug 打开串口：COM2
+2019/11/15 11:26:48 main.go:42: debug &{0xc000006050 312 {1 0} {0 0} 0xc0000aa000 0xc0000aa020}
+2019/11/15 11:26:48 main.go:44: debug net serve::9000
+2019/11/15 11:26:51 handler.go:72: debug Uploadhead
+2019/11/15 11:26:51 handler.go:106: debug {desktop.ini 282}
+2019/11/15 11:26:51 handler.go:108: debug F:\go_work\src\gofile\desktop.ini
+2019/11/15 11:29:22 main.go:18: debug Running with CPUs:6
+2019/11/15 11:29:22 main.go:22: debug app-version:v1.1.0
+2019/11/15 11:29:22 main.go:37: debug 打开串口：COM2
+2019/11/15 11:29:22 main.go:42: debug &{0xc000006058 312 {0 0} {0 0} 0xc0000a0e20 0xc0000a0e40}
+2019/11/15 11:29:22 main.go:44: debug net serve::9000
+2019/11/15 11:29:25 handler.go:72: debug Uploadhead
+2019/11/15 11:29:25 handler.go:106: debug {desktop.ini 282}
+2019/11/15 11:29:25 handler.go:108: debug desktop.ini
+2019/11/15 11:30:13 main.go:18: debug Running with CPUs:6
+2019/11/15 11:30:13 main.go:22: debug app-version:v1.1.0
+2019/11/15 11:30:13 main.go:37: debug 打开串口：COM2
+2019/11/15 11:30:13 main.go:42: debug &{0xc000006058 308 {1 0} {0 0} 0xc0000a0e20 0xc0000a0e40}
+2019/11/15 11:30:13 main.go:44: debug net serve::9000
+2019/11/15 11:30:16 handler.go:72: debug Uploadhead
+2019/11/15 11:30:16 handler.go:106: debug {desktop.ini 282}
+2019/11/15 11:30:16 handler.go:108: debug desktop.ini
+2019/11/15 11:30:40 main.go:18: debug Running with CPUs:6
+2019/11/15 11:30:40 main.go:22: debug app-version:v1.1.0
+2019/11/15 11:30:40 main.go:37: debug 打开串口：COM2
+2019/11/15 11:30:40 main.go:42: debug &{0xc000006050 312 {0 0} {0 0} 0xc0000a0e20 0xc0000a0e40}
+2019/11/15 11:30:40 main.go:44: debug net serve::9000
+2019/11/15 11:30:41 handler.go:72: debug Uploadhead
+2019/11/15 11:30:41 handler.go:106: debug {desktop.ini 282}
+2019/11/15 11:30:41 handler.go:108: debug desktop.ini
+2019/11/15 11:31:58 main.go:18: debug Running with CPUs:6
+2019/11/15 11:31:58 main.go:22: debug app-version:v1.1.0
+2019/11/15 11:31:58 main.go:37: debug 打开串口：COM2
+2019/11/15 11:31:58 main.go:42: debug &{0xc000006050 288 {0 0} {0 0} 0xc00009cfa0 0xc00009cfc0}
+2019/11/15 11:31:58 main.go:44: debug net serve::9000
+2019/11/15 11:32:01 handler.go:72: debug Uploadhead
+2019/11/15 11:32:01 handler.go:106: debug {SourceCodePro.ttf 103820}
+2019/11/15 11:32:01 handler.go:108: debug SourceCodePro.ttf
+2019/11/15 11:33:00 main.go:18: debug Running with CPUs:6
+2019/11/15 11:33:00 main.go:22: debug app-version:v1.1.0
+2019/11/15 11:33:00 main.go:37: debug 打开串口：COM2
+2019/11/15 11:33:00 main.go:42: debug &{0xc000006050 288 {0 0} {0 0} 0xc00009cf80 0xc00009cfa0}
+2019/11/15 11:33:00 main.go:44: debug net serve::9000
+2019/11/15 11:33:06 handler.go:72: debug Uploadhead
+2019/11/15 11:33:06 handler.go:106: debug {SourceCodePro.ttf 103820}
+2019/11/15 11:33:06 handler.go:108: debug SourceCodePro.ttf
+2019/11/15 12:04:08 main.go:18: debug Running with CPUs:6
+2019/11/15 12:04:08 main.go:22: debug app-version:v1.1.0
+2019/11/15 12:04:08 main.go:37: debug 打开串口：COM2
+2019/11/15 12:04:08 main.go:42: debug &{0xc000006050 312 {0 0} {0 0} 0xc0000a0e20 0xc0000a0e40}
+2019/11/15 12:04:08 main.go:44: debug net serve::9000
+2019/11/15 12:04:13 handler.go:72: debug Uploadhead
+2019/11/15 12:04:13 handler.go:106: debug {SourceCodePro.ttf 103820}
+2019/11/15 12:04:13 handler.go:108: debug SourceCodePro.ttf
+2019/11/15 12:09:00 main.go:18: debug Running with CPUs:6
+2019/11/15 12:09:00 main.go:22: debug app-version:v1.1.0
+2019/11/15 12:09:00 main.go:37: debug 打开串口：COM2
+2019/11/15 12:09:00 main.go:42: debug &{0xc0000b2008 308 {1 0} {0 0} 0xc0000ac1e0 0xc0000ac200}
+2019/11/15 12:09:00 main.go:44: debug net serve::9000
+2019/11/15 12:09:06 handler.go:72: debug Uploadhead
+2019/11/15 12:09:06 handler.go:106: debug {SourceCodePro.ttf 103820}
+2019/11/15 12:09:06 handler.go:108: debug SourceCodePro.ttf
+2019/11/15 12:09:53 main.go:18: debug Running with CPUs:6
+2019/11/15 12:09:53 main.go:22: debug app-version:v1.1.0
+2019/11/15 12:09:53 main.go:37: debug 打开串口：COM2
+2019/11/15 12:09:53 main.go:42: debug &{0xc000006050 312 {0 0} {0 0} 0xc0000a0e20 0xc0000a0e40}
+2019/11/15 12:09:53 main.go:44: debug net serve::9000
+2019/11/15 12:09:55 handler.go:72: debug Uploadhead
+2019/11/15 12:09:55 handler.go:106: debug {SourceCodePro.ttf 103820}
+2019/11/15 12:09:55 handler.go:108: debug SourceCodePro.ttf
+2019/11/15 13:45:07 main.go:18: debug Running with CPUs:6
+2019/11/15 13:45:07 main.go:22: debug app-version:v1.1.0
+2019/11/15 13:45:07 main.go:37: debug 打开串口：COM2
+2019/11/15 13:45:07 main.go:42: debug &{0xc000084040 304 {1 0} {0 0} 0xc0000bcb60 0xc0000bcb80}
+2019/11/15 13:45:07 main.go:44: debug net serve::9000
+2019/11/15 13:45:31 handler.go:72: debug Uploadhead
+2019/11/15 13:45:31 handler.go:106: debug {PineapplePi-F1_PCB_V2.rar 2716091}
+2019/11/15 13:45:31 handler.go:108: debug PineapplePi-F1_PCB_V2.rar

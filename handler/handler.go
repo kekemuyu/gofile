@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"encoding/binary"
 	"encoding/json"
-	"gofile/config"
+
 	"gofile/filehandler"
 	"gofile/msg"
 	"io"
 	"os"
 
-	"github.com/donnie4w/go-logger/logger"
+	log "github.com/donnie4w/go-logger/logger"
 )
 
 const (
@@ -35,19 +35,23 @@ func (h *Handler) HandleLoop() {
 			continue
 		}
 		if err != nil {
-			logger.Error("read head err:", err)
+			log.Error("read head err:", err)
 			continue
 		}
 
 		if message, err = msg.Unpack(tmpb); err != nil {
-			logger.Error("unpack msg err:", err)
+			log.Error("unpack msg err:", err)
 			continue
 		}
 
+		if message.Datalen <= 0 {
+			h.parseMsg(message)
+			continue
+		}
 		message.Data = make([]byte, message.Datalen)
 		n, err = h.Rwc.Read(message.Data)
 		if n <= 0 {
-			logger.Error("read data err:", err)
+			log.Error("read data err:", err)
 			continue
 		}
 		h.parseMsg(message)
@@ -62,15 +66,20 @@ func (h *Handler) Send(data []byte) {
 func (h *Handler) parseMsg(msg msg.Msg) {
 	switch msg.Id {
 	case List:
-		logger.Debug("df")
+		log.Debug("df")
 	case Uploadhead:
-		logger.Debug("")
+
+		log.Debug("Uploadhead")
+		uploadhead(msg.Data)
 	case Uploadbody:
-		logger.Debug("")
+		log.Debug("Uploadbody")
+		uploadbody(msg.Data)
 	case Downloadhead:
-		logger.Debug("")
+		log.Debug("Downloadhead")
+		// downloadhead(msg.Data)
 	case Downloadbody:
-		logger.Debug("")
+		log.Debug("Downloadbody")
+		// downloadbody(msg.Data)
 	}
 }
 
@@ -78,7 +87,7 @@ func list(data []byte) {
 	dir := string(data)
 	if dir == "." { //list cur dir files,save to config json
 
-		logger.Debug(".")
+		log.Debug(".")
 
 	}
 	//list mou yi ge dir files
@@ -86,20 +95,22 @@ func list(data []byte) {
 
 func uploadhead(data []byte) {
 	type filehead struct {
-		name string
-		size int64
+		Name string
+		Size int64
 	}
 	var fhead = filehead{}
 	var err error
 	if err = json.Unmarshal(data, &fhead); err != nil {
-		logger.Error(err)
+		log.Error(err)
 	}
-	curpath := config.Cfg.Section("file").Key("path").MustString("/")
-	if filehandler.DefaultUpload.Filehandler, err = os.Create(curpath + fhead.name); err != nil {
-		logger.Error(err)
+	log.Debug(fhead)
+	// curpath := config.GetRootdir() + `\`
+	log.Debug(fhead.Name)
+	if filehandler.DefaultUpload.Filehandler, err = os.Create(fhead.Name); err != nil {
+		log.Error(err)
 	}
-	filehandler.DefaultUpload.Name = fhead.name
-	filehandler.DefaultUpload.Size = fhead.size
+	filehandler.DefaultUpload.Name = fhead.Name
+	filehandler.DefaultUpload.Size = fhead.Size
 	filehandler.DefaultUpload.Off = 0
 }
 
@@ -118,13 +129,13 @@ func downloadhead(data []byte, rwc io.ReadWriteCloser) {
 	name := string(data) //filename
 	var err error
 	if filehandler.DefaultDownload.Filehandler, err = os.Open(name); err != nil {
-		logger.Error(err)
+		log.Error(err)
 		return
 	}
 
 	var fileInfo os.FileInfo
 	if fileInfo, err = filehandler.DefaultDownload.Filehandler.Stat(); err != nil {
-		logger.Error(err)
+		log.Error(err)
 		return
 	}
 
@@ -133,7 +144,7 @@ func downloadhead(data []byte, rwc io.ReadWriteCloser) {
 	dataBuff := bytes.NewBuffer([]byte{})
 
 	if err := binary.Write(dataBuff, binary.LittleEndian, filehandler.DefaultDownload.Size); err != nil {
-		logger.Error(err)
+		log.Error(err)
 		return
 	}
 	outmsg.Data = dataBuff.Bytes()
@@ -155,7 +166,7 @@ func downloadbody(rwc io.ReadWriteCloser) {
 	for i := 0; i < int(filehandler.DefaultDownload.Blocknum); i++ {
 		_, err := filehandler.DefaultDownload.Filehandler.ReadAt(outmsg.Data, filehandler.DefaultDownload.Off)
 		if err != nil {
-			logger.Error(err)
+			log.Error(err)
 			filehandler.DefaultDownload.Filehandler.Close()
 			rwc.Close()
 			return
