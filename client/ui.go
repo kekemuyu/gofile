@@ -43,6 +43,8 @@ func (m *Myweb) Run() {
 	ui.Bind("browsecurpath", Browsecurpath)
 	ui.Bind("upload", Upload)
 	ui.Bind("download", Download)
+	ui.Bind("browsedowncurpath", Browsedowncurpath)
+
 	//	ui.Bind("openSerial", New)
 	//	ui.Bind("closeSerial", closeSerial)
 	//	ui.Bind("send", send)

@@ -22,9 +22,13 @@ func Opencom(comnum string, baudrate int) bool {
 	if err != nil {
 		return false
 	}
-	hlr = handler.Handler{Rwc: irw}
+	hlr = handler.Handler{
+		Rwc:    irw,
+		Listch: make(chan []string, 10),
+	}
 	log.Debug("Opencom:", hlr)
 	go hlr.HandleLoop()
+	go Run()
 	return true
 }
 
@@ -116,6 +120,41 @@ func Upload(name string) {
 
 }
 
+//send list command to server
+func Browsedowncurpath() {
+	message := msg.Msg{
+		Id:      handler.List,
+		Datalen: 0,
+	}
+
+	Sendmsg(message)
+}
+
 func Download(name string) {
+	hlr.Downname = name
+	bs := []byte(name)
+	message := msg.Msg{
+		Id:      handler.Download,
+		Datalen: uint32(len(bs)),
+		Data:    bs,
+	}
+
+	Sendmsg(message)
+}
+
+func Run() {
+	select {
+	case listdir := <-hlr.Listch:
+		log.Debug(listdir)
+		jsStr1 := `$("#downfilesgroup").find("li").remove()`
+		Defaultweb.UI.Eval(jsStr1)
+		for _, f := range listdir {
+			log.Debug(f)
+
+			jsStr := fmt.Sprintf(`$('#downfilesgroup').append("<li>%s</li>")`, f)
+			Defaultweb.UI.Eval(jsStr)
+		}
+
+	}
 
 }

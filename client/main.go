@@ -18,6 +18,7 @@ func main() {
 	// b, err := msg.Pack(msg)
 	// logger.Debug(b)
 	// conn.Write(b)
+
 	Defaultweb = New(800, 600)
 	Defaultweb.Run()
 }

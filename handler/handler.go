@@ -1,13 +1,12 @@
 package handler
 
 import (
-	"bytes"
-	"encoding/binary"
 	"encoding/json"
-
+	"gofile/config"
 	"gofile/filehandler"
 	"gofile/msg"
 	"io"
+	"io/ioutil"
 	"os"
 
 	log "github.com/donnie4w/go-logger/logger"
@@ -15,14 +14,19 @@ import (
 
 const (
 	List uint32 = iota
+	Relist
 	Uploadhead
 	Uploadbody
-	Downloadhead
-	Downloadbody
+	Download
+	Redownload
 )
 
 type Handler struct {
-	Rwc io.ReadWriteCloser
+	Rwc      io.ReadWriteCloser
+	Listch   chan []string
+	Downname string
+	Downoff  int64
+	Downsize int64
 }
 
 func (h *Handler) HandleLoop() {
@@ -62,11 +66,24 @@ func (h *Handler) Send(data []byte) {
 	h.Rwc.Write(data)
 }
 
+func (h *Handler) Sendmsg(message msg.Msg) {
+	bs, err := msg.Pack(message)
+	if err != nil {
+		log.Error("sendmsg err:", err)
+		return
+	}
+	h.Send(bs)
+}
+
 //procol magnage
 func (h *Handler) parseMsg(msg msg.Msg) {
 	switch msg.Id {
 	case List:
-		log.Debug("df")
+		log.Debug("list")
+		h.list("1")
+	case Relist:
+		log.Debug("Relist")
+		h.Relist(msg.Data)
 	case Uploadhead:
 
 		log.Debug("Uploadhead")
@@ -74,25 +91,57 @@ func (h *Handler) parseMsg(msg msg.Msg) {
 	case Uploadbody:
 		log.Debug("Uploadbody")
 		uploadbody(msg.Data)
-	case Downloadhead:
-		log.Debug("Downloadhead")
-		// downloadhead(msg.Data)
-	case Downloadbody:
-		log.Debug("Downloadbody")
-		// downloadbody(msg.Data)
+	case Download:
+		log.Debug("Download")
+		h.download(msg.Data)
+	case Redownload:
+		log.Debug("Redownload")
+		h.Redownload(msg.Data)
 	}
 }
 
-func list(data []byte) {
-	dir := string(data)
-	if dir == "." { //list cur dir files,save to config json
+func (h *Handler) list(dirname string) {
+	curpath := config.GetRootdir()
 
-		log.Debug(".")
+	files, _ := ioutil.ReadDir(curpath)
+
+	var filenames []string
+	for _, f := range files {
+		filenames = append(filenames, f.Name())
+		log.Debug(f.Name())
 
 	}
-	//list mou yi ge dir files
+
+	filemap := make(map[string][]string)
+	filemap["value"] = filenames
+
+	bs, err := json.Marshal(filemap)
+	if err != nil {
+		log.Error(err)
+		return
+	}
+
+	if len(filenames) > 0 {
+		message := msg.Msg{
+			Id:      Relist,
+			Datalen: uint32(len(bs)),
+			Data:    bs,
+		}
+		h.Sendmsg(message)
+	}
+
 }
 
+func (h *Handler) Relist(data []byte) {
+	filemap := make(map[string][]string)
+	err := json.Unmarshal(data, &filemap)
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	log.Debug(filemap["value"])
+	h.Listch <- filemap["value"] //send server local dir files to client
+}
 func uploadhead(data []byte) {
 	type filehead struct {
 		Name string
@@ -125,66 +174,66 @@ func uploadbody(data []byte) {
 	}
 }
 
-func downloadhead(data []byte, rwc io.ReadWriteCloser) {
+func (h *Handler) download(data []byte) {
 	name := string(data) //filename
 	var err error
-	if filehandler.DefaultDownload.Filehandler, err = os.Open(name); err != nil {
+	var file *os.File
+	if file, err = os.Open(name); err != nil {
 		log.Error(err)
 		return
 	}
 
 	var fileInfo os.FileInfo
-	if fileInfo, err = filehandler.DefaultDownload.Filehandler.Stat(); err != nil {
+	if fileInfo, err = os.Stat(name); err != nil {
 		log.Error(err)
 		return
 	}
 
-	filehandler.DefaultDownload.Size = fileInfo.Size()
-	var outmsg msg.Msg
-	dataBuff := bytes.NewBuffer([]byte{})
+	filesize := fileInfo.Size()
+	blocksize := filesize / 1024
+	lastsize := filesize % 1024
+	log.Debug(blocksize, lastsize)
 
-	if err := binary.Write(dataBuff, binary.LittleEndian, filehandler.DefaultDownload.Size); err != nil {
-		log.Error(err)
-		return
+	outbytes := make([]byte, 1024)
+	h.Downoff = 0
+	h.Downsize = filesize
+	message := msg.Msg{
+		Id:      Redownload,
+		Datalen: 1024,
 	}
-	outmsg.Data = dataBuff.Bytes()
-	outmsg.Id = Downloadhead
-	outmsg.Datalen = uint32(len(outmsg.Data))
-
-	outbytes, _ := msg.Pack(outmsg)
-	rwc.Write(outbytes)
-	filehandler.DefaultDownload.Off = 0
-	filehandler.DefaultDownload.Blocksize = 1024
-	filehandler.DefaultDownload.Blocknum = filehandler.DefaultDownload.Size / filehandler.DefaultDownload.Blocksize
-	filehandler.DefaultDownload.Lastpacksize = filehandler.DefaultDownload.Size % filehandler.DefaultDownload.Blocksize
-}
-
-func downloadbody(rwc io.ReadWriteCloser) {
-	var outmsg msg.Msg
-	outmsg.Id = Downloadbody
-
-	for i := 0; i < int(filehandler.DefaultDownload.Blocknum); i++ {
-		_, err := filehandler.DefaultDownload.Filehandler.ReadAt(outmsg.Data, filehandler.DefaultDownload.Off)
+	for i := int64(0); i < blocksize; {
+		_, err = file.ReadAt(outbytes, i*1024)
 		if err != nil {
 			log.Error(err)
-			filehandler.DefaultDownload.Filehandler.Close()
-			rwc.Close()
 			return
 		}
-		filehandler.DefaultDownload.Off += filehandler.DefaultDownload.Blocksize
-		outbytes, _ := msg.Pack(outmsg)
-		_, err = rwc.Write(outbytes)
-		if err != nil {
-			rwc.Close()
-			return
-		}
-	}
-	if filehandler.DefaultDownload.Lastpacksize > 0 {
-		filehandler.DefaultDownload.Filehandler.ReadAt(outmsg.Data, filehandler.DefaultDownload.Off)
-		outbytes, _ := msg.Pack(outmsg)
-		rwc.Write(outbytes)
-		filehandler.DefaultDownload.Filehandler.Close()
-		return //
+		message.Data = outbytes
+		h.Sendmsg(message)
 
+	}
+	n, _ := file.ReadAt(outbytes, blocksize*1024)
+	log.Debug(n)
+	if n > 0 {
+
+		message.Datalen = uint32(lastsize)
+		message.Data = outbytes[:lastsize]
+		log.Debug(message)
+		h.Sendmsg(message)
+	}
+}
+
+func (h *Handler) Redownload(data []byte) {
+	log.Debug(h.Downname)
+	file, err := os.Create(h.Downname)
+	defer file.Close()
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	file.WriteAt(data, h.Downoff)
+	h.Downoff += int64(len(data))
+	if h.Downoff >= h.Downsize {
+		return
 	}
 }
