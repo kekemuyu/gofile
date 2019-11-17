@@ -17,16 +17,18 @@ const (
 	Relist
 	Uploadhead
 	Uploadbody
+	Reuploadbody
 	Download
 	Redownload
 )
 
 type Handler struct {
-	Rwc      io.ReadWriteCloser
-	Listch   chan []string
-	Downname string
-	Downoff  int64
-	Downsize int64
+	Rwc          io.ReadWriteCloser
+	Listch       chan []string
+	Downname     string
+	Downoff      int64
+	Downsize     int64
+	Uploadbodych chan bool
 }
 
 func (h *Handler) HandleLoop() {
@@ -90,7 +92,10 @@ func (h *Handler) parseMsg(msg msg.Msg) {
 		uploadhead(msg.Data)
 	case Uploadbody:
 		log.Debug("Uploadbody")
-		uploadbody(msg.Data)
+		h.uploadbody(msg.Data)
+	case Reuploadbody:
+		log.Debug("Reuploadbody")
+		h.Reuploadbody()
 	case Download:
 		log.Debug("Download")
 		h.download(msg.Data)
@@ -163,15 +168,26 @@ func uploadhead(data []byte) {
 	filehandler.DefaultUpload.Off = 0
 }
 
-func uploadbody(data []byte) {
+func (h *Handler) uploadbody(data []byte) {
 	if filehandler.DefaultUpload.Filehandler == nil {
 		return
 	}
 	filehandler.DefaultUpload.Filehandler.WriteAt(data, filehandler.DefaultUpload.Off)
 	filehandler.DefaultUpload.Off += int64(len(data))
 	if filehandler.DefaultUpload.Off >= filehandler.DefaultUpload.Size {
+		log.Debug("uploadbody comlete")
 		filehandler.DefaultUpload.Filehandler.Close()
+		return
 	}
+	message := msg.Msg{
+		Id:      Reuploadbody,
+		Datalen: 0,
+	}
+	h.Sendmsg(message)
+}
+
+func (h *Handler) Reuploadbody() {
+	h.Uploadbodych <- true
 }
 
 func (h *Handler) download(data []byte) {

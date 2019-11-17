@@ -23,8 +23,9 @@ func Opencom(comnum string, baudrate int) bool {
 		return false
 	}
 	hlr = handler.Handler{
-		Rwc:    irw,
-		Listch: make(chan []string, 10),
+		Rwc:          irw,
+		Listch:       make(chan []string, 10),
+		Uploadbodych: make(chan bool),
 	}
 	log.Debug("Opencom:", hlr)
 	go hlr.HandleLoop()
@@ -109,7 +110,7 @@ func Upload(name string) {
 		}
 		message.Data = outbytes
 		Sendmsg(message)
-
+		<-hlr.Uploadbodych
 	}
 	n, _ := file.ReadAt(outbytes, blocksize*1024)
 	if n > 0 {

@@ -36,8 +36,9 @@ func main() {
 	} else {
 		logger.Debug("打开串口：", portName)
 		hlr := handler.Handler{
-			Rwc:    defaultCom,
-			Listch: make(chan []string, 10),
+			Rwc:          defaultCom,
+			Listch:       make(chan []string, 10),
+			Uploadbodych: make(chan bool),
 		}
 		go hlr.HandleLoop() //start comm server
 		logger.Debug(defaultCom)
