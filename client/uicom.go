@@ -7,6 +7,7 @@ import (
 	"gofile/config"
 	"gofile/handler"
 	"gofile/msg"
+	"gofile/util"
 	"io/ioutil"
 	"os"
 
@@ -42,9 +43,57 @@ func Sendmsg(message msg.Msg) {
 	hlr.Send(bs)
 }
 
-func Browsecurpath() {
-	curpath := config.GetRootdir()
-	// files, _ := filepath.Glob(curpath)
+func Browsecurpath(bpath string) byte {
+
+	curpath := config.Cfg.Section("file").Key("uploadpath").MustString(config.GetRootdir())
+	log.Debug(curpath)
+	if bpath != "" {
+		curpath += `\` + bpath
+	}
+
+	s, err := os.Stat(curpath)
+	if err != nil {
+		log.Error(err)
+		return 3
+	}
+	if s.IsDir() {
+		files, _ := ioutil.ReadDir(curpath)
+		jsStr1 := `$("#filesgroup").find("li").remove()`
+		Defaultweb.UI.Eval(jsStr1)
+		for _, f := range files {
+			log.Debug(f.Name())
+
+			jsStr := fmt.Sprintf(`$('#filesgroup').append("<li>%s</li>")`, f.Name())
+			Defaultweb.UI.Eval(jsStr)
+		}
+		config.Cfg.Section("file").Key("uploadpath").SetValue(curpath)
+
+		config.Save()
+		return 0
+	} else {
+		files, _ := ioutil.ReadDir(curpath)
+		jsStr1 := `$("#filesgroup").find("li").remove()`
+		Defaultweb.UI.Eval(jsStr1)
+		for _, f := range files {
+			log.Debug(f.Name())
+
+			jsStr := fmt.Sprintf(`$('#filesgroup').append("<li>%s</li>")`, f.Name())
+			Defaultweb.UI.Eval(jsStr)
+		}
+		return 1
+	}
+
+}
+
+func Browseruppage() {
+	curpath := config.Cfg.Section("file").Key("uploadpath").MustString(config.GetRootdir())
+	log.Debug(curpath)
+	curpath = util.GetParentDirectory(curpath)
+	_, err := os.Stat(curpath)
+	if err != nil {
+		log.Error(err)
+		return
+	}
 
 	files, _ := ioutil.ReadDir(curpath)
 	jsStr1 := `$("#filesgroup").find("li").remove()`
@@ -55,6 +104,10 @@ func Browsecurpath() {
 		jsStr := fmt.Sprintf(`$('#filesgroup').append("<li>%s</li>")`, f.Name())
 		Defaultweb.UI.Eval(jsStr)
 	}
+	config.Cfg.Section("file").Key("uploadpath").SetValue(curpath)
+
+	config.Save()
+
 }
 
 func Upload(name string) {

@@ -59,7 +59,7 @@
                 <input id="uploadpath" type="text" name="">
             </div>
             <div class="col-sm-6">
-                 <button class=" btn btn-default " type="button" id="btnselect">选择</button>
+                <button class=" btn btn-default " type="button" id="btnselect">选择</button>
                 <button class=" btn btn-default " type="button" id="btnupload">上传</button>
             </div>
         </div>
@@ -69,11 +69,10 @@
                 <input type="text" id="downloadname" name="">
             </div>
             <div class="col-sm-6">
-            	<button class=" btn btn-default " type="button" id="btndownselect">选择</button>
+                <button class=" btn btn-default " type="button" id="btndownselect">选择</button>
                 <button class=" btn btn-default " type="button" id="btndownload">下载</button>
             </div>
         </div>
-        
     </div>
 </body>
 <!-- Modal -->
@@ -97,20 +96,19 @@
                     <div class="col-sm-6">
                         <button type="button" class="btn btn-primary" data-dismiss="modal">取消</button>
                         <button type="button" class="btn btn-primary" id="btnPageup">向上</button>
-                        <button id="btnfileopen" type="button" class="btn btn-primary" >打开</button>
+                        <button id="btnfileopen" type="button" class="btn btn-primary">打开</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 <!-- Modal -->
 <div class="modal fade" id="selectdownModal">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" >打开文件</h4>
+                <h4 class="modal-title">打开文件</h4>
             </div>
             <div class="modal-body">
                 <div class="pre-scrollable">
@@ -126,14 +124,13 @@
                     <div class="col-sm-6">
                         <button type="button" class="btn btn-primary" data-dismiss="modal">取消</button>
                         <button type="button" class="btn btn-primary" id="btndownPageup">向上</button>
-                        <button id="btndownfileopen" type="button" class="btn btn-primary" >打开</button>
+                        <button id="btndownfileopen" type="button" class="btn btn-primary">打开</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 <script type="text/javascript">
 var selectname = "";
 $(document).ready(function() {
@@ -144,7 +141,7 @@ $(document).ready(function() {
         console.log($(this).text());
         selectname = $(this).text();
         $('#selectdis').text(selectname);
-      
+
     })
 
     $('#downfilesgroup').on("click", "li", function() {
@@ -153,19 +150,30 @@ $(document).ready(function() {
         console.log($(this).text());
         selectname = $(this).text();
         $('#selectdowndis').text(selectname);
-      
+
     })
 });
 
+//browser files
+$('#btnfileopen').click(async function() {
+    isdir = await browsecurpath(selectname);
+    if ((isdir == 0)||(isdir == 3)) {
 
-$('#btnfileopen').click(function(){
-  $('#uploadpath').val(selectname);
-   $('#selectModal').modal('hide');
+    } else if(isdir == 1) {
+        $('#uploadpath').val(selectname);
+        $('#selectModal').modal('hide');
+
+    }
+
 });
 
-$('#btndownfileopen').click(function(){
-  $('#downloadname').val(selectname);
-   $('#selectdownModal').modal('hide');
+$('#btnPageup').click(async function(){
+	await browseruppage();
+});
+
+$('#btndownfileopen').click(function() {
+    $('#downloadname').val(selectname);
+    $('#selectdownModal').modal('hide');
 });
 
 $('#btnComOpen').click(async function() {
@@ -193,16 +201,18 @@ $('#btnComClose').click(function() {
 
 });
 
-$('#btnselect').click(async function(){
- $('#selectModal').modal();
- await browsecurpath();
+$('#btnselect').click(async function() {
+    $('#selectModal').modal();
+    await browsecurpath("");
 });
 
 $('#btnupload').click(async function() {
-   
+
     console.log('btnupload');
     await upload(selectname);
 });
+
+
 
 $('#btndownload').click(async function() {
     name = $('#downloadname').val();
@@ -212,8 +222,8 @@ $('#btndownload').click(async function() {
 
 //*************download********************
 $('#btndownselect').click(async function(event) {
-	$("#selectdownModal").modal();
-	await browsedowncurpath();
+    $("#selectdownModal").modal();
+    await browsedowncurpath();
 });
 </script>
 

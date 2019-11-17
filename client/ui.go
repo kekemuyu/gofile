@@ -41,6 +41,7 @@ func (m *Myweb) Run() {
 
 	ui.Bind("opencom", Opencom)
 	ui.Bind("browsecurpath", Browsecurpath)
+	ui.Bind("browseruppage", Browseruppage)
 	ui.Bind("upload", Upload)
 	ui.Bind("download", Download)
 	ui.Bind("browsedowncurpath", Browsedowncurpath)
