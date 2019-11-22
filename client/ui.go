@@ -42,9 +42,10 @@ func (m *Myweb) Run() {
 	ui.Bind("opencom", Opencom)
 	ui.Bind("browsecurpath", Browsecurpath)
 	ui.Bind("browseruppage", Browseruppage)
-	ui.Bind("upload", Upload)
-	ui.Bind("download", Download)
-	ui.Bind("browsedowncurpath", Browsedowncurpath)
+	ui.Bind("upload", DefaultComtask.Upload)
+	ui.Bind("download", DefaultComtask.DownloadHeadSend)
+	ui.Bind("browsedowncurpath", DefaultComtask.ListServerpath)
+	ui.Bind("browsedownuppagepath", DefaultComtask.ListUppageServerpath)
 
 	//	ui.Bind("openSerial", New)
 	//	ui.Bind("closeSerial", closeSerial)

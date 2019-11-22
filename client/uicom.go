@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"gofile/com"
 	"gofile/config"
@@ -23,10 +22,12 @@ func Opencom(comnum string, baudrate int) bool {
 	if err != nil {
 		return false
 	}
+
 	hlr = handler.Handler{
 		Rwc:          irw,
 		Listch:       make(chan []string, 10),
 		Uploadbodych: make(chan bool),
+		Chandler:     DefaultComtask,
 	}
 	log.Debug("Opencom:", hlr)
 	go hlr.HandleLoop()
@@ -45,7 +46,7 @@ func Sendmsg(message msg.Msg) {
 
 func Browsecurpath(bpath string) byte {
 
-	curpath := config.Cfg.Section("file").Key("uploadpath").MustString(config.GetRootdir())
+	curpath := config.Cfg.Section("file").Key("clientpath").MustString(config.GetRootdir())
 	log.Debug(curpath)
 	if bpath != "" {
 		curpath += `\` + bpath
@@ -66,7 +67,7 @@ func Browsecurpath(bpath string) byte {
 			jsStr := fmt.Sprintf(`$('#filesgroup').append("<li>%s</li>")`, f.Name())
 			Defaultweb.UI.Eval(jsStr)
 		}
-		config.Cfg.Section("file").Key("uploadpath").SetValue(curpath)
+		config.Cfg.Section("file").Key("clientpath").SetValue(curpath)
 
 		config.Save()
 		return 0
@@ -86,7 +87,7 @@ func Browsecurpath(bpath string) byte {
 }
 
 func Browseruppage() {
-	curpath := config.Cfg.Section("file").Key("uploadpath").MustString(config.GetRootdir())
+	curpath := config.Cfg.Section("file").Key("clientpath").MustString(config.GetRootdir())
 	log.Debug(curpath)
 	curpath = util.GetParentDirectory(curpath)
 	_, err := os.Stat(curpath)
@@ -104,96 +105,10 @@ func Browseruppage() {
 		jsStr := fmt.Sprintf(`$('#filesgroup').append("<li>%s</li>")`, f.Name())
 		Defaultweb.UI.Eval(jsStr)
 	}
-	config.Cfg.Section("file").Key("uploadpath").SetValue(curpath)
+	config.Cfg.Section("file").Key("clientpath").SetValue(curpath)
 
 	config.Save()
 
-}
-
-func Upload(name string) {
-	log.Debug(name)
-	curpath := config.GetRootdir() + `\` + name
-
-	file, err := os.Open(curpath)
-	if err != nil {
-		log.Error(err)
-		return
-	}
-	fileinfo, err := os.Stat(curpath)
-	if err != nil {
-		log.Error(err)
-		return
-	}
-	type filehead struct {
-		Name string
-		Size int64
-	}
-
-	fhead := filehead{
-		Name: fileinfo.Name(),
-		Size: fileinfo.Size(),
-	}
-	log.Debug(fhead)
-	bs, _ := json.Marshal(fhead)
-	message := msg.Msg{
-		Id:      handler.Uploadhead,
-		Datalen: uint32(len(bs)),
-		Data:    bs,
-	}
-	log.Debug(message)
-	Sendmsg(message)
-
-	blocksize := fhead.Size / 1024
-	lastsize := fhead.Size % 1024
-	log.Debug(blocksize, lastsize)
-	if err != nil {
-		log.Fatal(err)
-	}
-	outbytes := make([]byte, 1024)
-
-	message = msg.Msg{
-		Id:      handler.Uploadbody,
-		Datalen: 1024,
-	}
-	for i := int64(0); i < blocksize; {
-		_, err = file.ReadAt(outbytes, i*1024)
-		if err != nil {
-			log.Error(err)
-			return
-		}
-		message.Data = outbytes
-		Sendmsg(message)
-		<-hlr.Uploadbodych
-	}
-	n, _ := file.ReadAt(outbytes, blocksize*1024)
-	if n > 0 {
-		message.Datalen = uint32(lastsize)
-		message.Data = outbytes[:lastsize]
-		Sendmsg(message)
-	}
-
-}
-
-//send list command to server
-func Browsedowncurpath() {
-	message := msg.Msg{
-		Id:      handler.List,
-		Datalen: 0,
-	}
-
-	Sendmsg(message)
-}
-
-func Download(name string) {
-	hlr.Downname = name
-	bs := []byte(name)
-	message := msg.Msg{
-		Id:      handler.Download,
-		Datalen: uint32(len(bs)),
-		Data:    bs,
-	}
-
-	Sendmsg(message)
 }
 
 func Run() {

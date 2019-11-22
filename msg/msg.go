@@ -49,8 +49,5 @@ func Unpack(b []byte) (msg Msg, err error) {
 		return mg, err
 	}
 
-	//判断dataLen的长度是否超出我们允许的最大包长度
-
-	//这里只需要把head的数据拆包出来就可以了，然后再通过head的长度，再从conn读取一次数据
 	return msg, nil
 }

@@ -4,10 +4,9 @@ import (
 	"os"
 )
 
-type Fileinfo struct {
-	Name   string
-	Parent string
-	Isdrec byte
+type FileHead struct {
+	Name string
+	Size int64
 }
 
 type Handler struct {
@@ -21,7 +20,3 @@ type Handler struct {
 }
 
 var DefaultUpload, DefaultDownload Handler
-
-func (f *Fileinfo) pack() {
-	// os.Create()
-}

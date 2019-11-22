@@ -22,6 +22,8 @@ func AppVersion() {
 	logger.Debug("app-version:", config.Cfg.Section("").Key("app_ver").String())
 }
 
+var hlr handler.Handler
+
 func main() {
 	portName := config.Cfg.Section("serial").Key("PortName").MustString("com1")
 	baund := config.Cfg.Section("serial").Key("BaudRate").MustInt()
@@ -35,11 +37,14 @@ func main() {
 		logger.Error("打开串口错误：", err)
 	} else {
 		logger.Debug("打开串口：", portName)
-		hlr := handler.Handler{
+
+		hlr = handler.Handler{
 			Rwc:          defaultCom,
 			Listch:       make(chan []string, 10),
 			Uploadbodych: make(chan bool),
+			Shandler:     DefaultComtask,
 		}
+
 		go hlr.HandleLoop() //start comm server
 		logger.Debug(defaultCom)
 	}
