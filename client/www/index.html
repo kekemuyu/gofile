@@ -9,7 +9,7 @@
     <script type="text/javascript" src="./bootstrap-3.3.7/js/bootstrap.min.js"></script>
 </head>
 
-<body>
+<body style="overflow: hidden !important;">
     <nav class="navbar navbar-default navbar-fixed-top" style="background-color: #009966;">
         <div class="container navbar-left">
             <div class="navbar-header">
@@ -32,12 +32,12 @@
                 <input id="baudrate" value="115200">
             </div>
             <div class="col-sm-4">
-                <button class=" btn btn-default " type="button" id="btnComOpen">打开</button>
-                <button class=" btn btn-default " type="button" id="btnComClose">关闭</button>
+                <button class=" btn btn-success " type="button" id="btnComOpen">打开</button>
+                <button class=" btn btn-success " type="button" id="btnComClose">关闭</button>
             </div>
         </div>
         <hr>
-        <div class="row">
+        <!--  <div class="row">
             <div class="col-sm-4">
                 <label for="inputCode">服务器地址:</label>
                 <input type="text" id="codeid" placeholder="" value="127.0.0.1">
@@ -50,132 +50,118 @@
                 <button class=" btn btn-default " type="button" id="btnset">连接</button>
                 <button class=" btn btn-default " type="button" id="btnset">断开</button>
             </div>
-        </div>
-        <hr>
-        <button class=" btn btn-default " type="button" id="btnlist">刷新</button>
-        <hr />
-        <div class="row">
-            <div class="col-sm-3">
-                <input id="uploadpath" type="text" name="">
+        </div> -->
+        <input id="clientpath" type="text" name="">
+        <button class=" btn btn-success " type="button" id="btnPageup">向上</button>
+        <button class=" btn btn-success " type="button" id="btnupload">上传</button>
+        <input type="text" id="serverpath" name="" style="margin-left: 100px">
+        <button class=" btn btn-success " type="button" id="btnserverPageup">向上</button>
+        <button class=" btn btn-success " type="button" id="btndownload">下载</button>
+        <div class="row" style="width: 780px">
+            <div class="col-sm-6" style="border:solid;height: 300px;overflow-y: auto;">
+                <ul class="list-group" id="clientfiles" style="list-style-type:none">
+                </ul>
             </div>
-            <div class="col-sm-6">
-                <button class=" btn btn-default " type="button" id="btnselect">选择</button>
-                <button class=" btn btn-default " type="button" id="btnupload">上传</button>
-            </div>
-        </div>
-        <hr />
-        <div class="row">
-            <div class="col-sm-3">
-                <input type="text" id="downloadname" name="">
-            </div>
-            <div class="col-sm-6">
-                <button class=" btn btn-default " type="button" id="btndownselect">选择</button>
-                <button class=" btn btn-default " type="button" id="btndownload">下载</button>
+            <div class="col-sm-6" style="border:solid;height: 300px;overflow-y: auto;">
+                <ul class="list-group" id="serverfiles" style="list-style-type:none">
+                </ul>
             </div>
         </div>
     </div>
 </body>
-<!-- Modal -->
-<div class="modal fade" id="selectModal">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="mySelectModalLabel">打开文件</h4>
-            </div>
-            <div class="modal-body">
-                <div class="pre-scrollable">
-                    <ul class="list-group" id="filesgroup" style="list-style-type:none">
-                    </ul>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <div class="row">
-                    <div class="col-sm-6">
-                        文件名：<em id="selectdis"></em>
-                    </div>
-                    <div class="col-sm-6">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal">取消</button>
-                        <button type="button" class="btn btn-primary" id="btnPageup">向上</button>
-                        <button id="btnfileopen" type="button" class="btn btn-primary">打开</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Modal -->
-<div class="modal fade" id="selectdownModal">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">打开文件</h4>
-            </div>
-            <div class="modal-body">
-                <div class="pre-scrollable">
-                    <ul class="list-group" id="downfilesgroup" style="list-style-type:none">
-                    </ul>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <div class="row">
-                    <div class="col-sm-6">
-                        文件名：<em id="selectdowndis"></em>
-                    </div>
-                    <div class="col-sm-6">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal">取消</button>
-                        <button type="button" class="btn btn-primary" id="btndownPageup">向上</button>
-                        <button id="btndownfileopen" type="button" class="btn btn-primary">打开</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 <script type="text/javascript">
 var selectname = "";
-$(document).ready(function() {
+var selectname2 = "";
 
-    $('#filesgroup').on("click", "li", function() {
-        $('#filesgroup').find('li').css('background-color', 'white');
-        $(this).css('background-color', '#e2f5ff');
-        console.log($(this).text());
-        selectname = $(this).text();
-        $('#selectdis').text(selectname);
+$(function() {
+    var isdb;
+    //客户端
+    $('#clientfiles').on("click", "li", function() {
 
+        isdb = false;
+        window.setTimeout(cc, 300);
+
+        obj = $(this);
+
+
+        function cc() {
+            if (isdb) {
+                return
+            }
+            $('#clientfiles').find('li').css('background-color', 'white');
+            obj.css('background-color', '#e2f5ff');
+            console.log(obj.text());
+            selectname = obj.text();
+
+            $('#clientpath').val(selectname);
+        }
     })
 
-    $('#downfilesgroup').on("click", "li", function() {
-        $('#downfilesgroup').find('li').css('background-color', 'white');
+    $('#clientfiles').on("dblclick", "li", async function() {
+
+        isdb = true;
+        $('#clientfiles').find('li').css('background-color', 'white');
         $(this).css('background-color', '#e2f5ff');
-        console.log($(this).text());
+        console.log("dblclick", $(this).text());
         selectname = $(this).text();
-        $('#selectdowndis').text(selectname);
-
+        $('#clientpath').val(selectname);
+        await browseclientpath(selectname);
     })
+
+    //远端
+    $('#serverfiles').on("click", "li", function() {
+
+        isdb = false;
+        window.setTimeout(cc, 300);
+
+        obj = $(this);
+
+
+        function cc() {
+            if (isdb) {
+                return
+            }
+            $('#serverfiles').find('li').css('background-color', 'white');
+            obj.css('background-color', '#e2f5ff');
+            console.log(obj.text());
+            selectname2 = obj.text();
+
+            $('#serverpath').val(selectname2);
+        }
+    })
+
+    $('#serverfiles').on("dblclick", "li", async function() {
+
+        isdb = true;
+        $('#serverfiles').find('li').css('background-color', 'white');
+        $(this).css('background-color', '#e2f5ff');
+        console.log("dblclick", $(this).text());
+        selectname2 = $(this).text();
+        $('#serverpath').val(selectname2);
+        await browseserverpath(selectname2);
+    })
+
+    // $('#filesgroup').on("click", "li", function() {
+    //     $('#filesgroup').find('li').css('background-color', 'white');
+    //     $(this).css('background-color', '#e2f5ff');
+    //     console.log($(this).text());
+    //     selectname = $(this).text();
+    //     $('#selectdis').text(selectname);
+
+    // })
+
+    // $('#downfilesgroup').on("click", "li", function() {
+    //     $('#downfilesgroup').find('li').css('background-color', 'white');
+    //     $(this).css('background-color', '#e2f5ff');
+    //     console.log($(this).text());
+    //     selectname = $(this).text();
+    //     $('#selectdowndis').text(selectname);
+
+    // })
 });
 
-//browser files
-$('#btnfileopen').click(async function() {
-    isdir = await browsecurpath(selectname);
-    if ((isdir == 0)||(isdir == 3)) {
 
-    } else if(isdir == 1) {
-        $('#uploadpath').val(selectname);
-        $('#selectModal').modal('hide');
-
-    }
-
-});
-
-$('#btnPageup').click(async function(){
-	await browseruppage();
-});
-
-$('#btndownfileopen').click(function() {
-    $('#downloadname').val(selectname);
-    $('#selectdownModal').modal('hide');
-});
-
+//串口操作
 $('#btnComOpen').click(async function() {
 
     Comnum = $('#comNum').val();
@@ -184,6 +170,16 @@ $('#btnComOpen').click(async function() {
     ok = await opencom(Comnum, Baudrate)
     if (ok) {
         alert('打开串口成功');
+        isdir = await browseclientpath("");
+        if ((isdir == 0) || (isdir == 3)) {
+
+        } else if (isdir == 1) {
+            // $('#clientpath').val(selectname);
+            console.log("clientpath dis");
+
+        }
+        serverpathname = "init";
+        await browseserverpath(serverpathname);
     } else {
 
         alert('打开串口失败');
@@ -191,39 +187,31 @@ $('#btnComOpen').click(async function() {
 
 });
 
-$('#bntlist').click(async function() {
-    console.log('btnlist:');
-    await list();
-});
-
 $('#btnComClose').click(function() {
     console.log('btnclose');
 
 });
 
-$('#btnselect').click(async function() {
-    $('#selectModal').modal();
-    await browsecurpath("");
+//客户端操作
+$('#btnPageup').click(async function() {
+    await browseclientuppage();
 });
 
 $('#btnupload').click(async function() {
-
     console.log('btnupload');
     await upload(selectname);
 });
 
 
-
+//远端操作
 $('#btndownload').click(async function() {
-    name = $('#downloadname').val();
-    console.log('btndownload', name);
+    name = $('#serverpath').val();
+    console.log('serverpath', name);
     await download(name);
 });
 
-//*************download********************
-$('#btndownselect').click(async function(event) {
-    $("#selectdownModal").modal();
-    await browsedowncurpath();
+$('#btnserverPageup').click(async function() {
+    await browseserverpageup();
 });
 </script>
 

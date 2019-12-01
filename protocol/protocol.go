@@ -5,6 +5,8 @@ type CHandler interface {
 
 	CListUppageHandle(data []byte)
 
+	CUploadbodyNextpackHandle(data []byte)
+
 	CDownloadheadHandle(data []byte)
 	CDownloadbodyHandle(data []byte)
 }
@@ -19,4 +21,6 @@ type SHandler interface {
 
 	SDownloadheadHandle(data []byte)
 	SDownloadbodyHandle(data []byte)
+
+	SDownloadbodyNextpackHandle(data []byte)
 }

@@ -18,33 +18,40 @@ type FileHead struct {
 }
 
 type Comtask struct {
-	Name            string
-	Size            int64
-	Downloadfileoff int64
+	Name                  string
+	Size                  int64
+	Downloadfileoff       int64
+	Uploadbody_nextpackch chan bool
+	Filehandler           *os.File
 }
 
-var DefaultComtask Comtask
+var DefaultComtask = Comtask{
+	Uploadbody_nextpackch: make(chan bool),
+}
 
-func (c Comtask) ListServerpath() {
+func (c *Comtask) ListServerpath(serverpathname string) {
+	bs := []byte(serverpathname)
 	message := msg.Msg{
 		Id:      handler.Clist,
-		Datalen: 0,
+		Datalen: uint32(len(bs)),
+		Data:    bs,
 	}
 	log.Debug(message)
 	hlr.Sendmsg(message)
 }
 
-func (c Comtask) ListUppageServerpath() {
+func (c *Comtask) ListUppageServerpath() {
 	message := msg.Msg{
 		Id:      handler.Clistuppage,
-		Datalen: 0,
+		Datalen: 2,
+		Data:    []byte("up"),
 	}
 	log.Debug(message)
 	hlr.Sendmsg(message)
 }
 
 //更新界面服务端目录
-func (c Comtask) CListHandle(data []byte) {
+func (c *Comtask) CListHandle(data []byte) {
 	filemap := make(map[string][]string)
 	err := json.Unmarshal(data, &filemap)
 	if err != nil {
@@ -53,18 +60,18 @@ func (c Comtask) CListHandle(data []byte) {
 	}
 	files := filemap["value"]
 
-	jsStr := `$("#downfilesgroup").find("li").remove()`
+	jsStr := `$("#serverfiles").find("li").remove()`
 	Defaultweb.UI.Eval(jsStr)
 	for _, f := range files {
 		log.Debug(f)
 
-		jsStr := fmt.Sprintf(`$('#downfilesgroup').append("<li>%s</li>")`, f)
+		jsStr := fmt.Sprintf(`$('#serverfiles').append("<li>%s</li>")`, f)
 		Defaultweb.UI.Eval(jsStr)
 	}
 }
 
 //更新上一界面服务端目录
-func (c Comtask) CListUppageHandle(data []byte) {
+func (c *Comtask) CListUppageHandle(data []byte) {
 	filemap := make(map[string][]string)
 	err := json.Unmarshal(data, &filemap)
 	if err != nil {
@@ -73,18 +80,18 @@ func (c Comtask) CListUppageHandle(data []byte) {
 	}
 	files := filemap["value"]
 
-	jsStr := `$("#downfilesgroup").find("li").remove()`
+	jsStr := `$("#serverfiles").find("li").remove()`
 	Defaultweb.UI.Eval(jsStr)
 	for _, f := range files {
 		log.Debug(f)
 
-		jsStr := fmt.Sprintf(`$('#downfilesgroup').append("<li>%s</li>")`, f)
+		jsStr := fmt.Sprintf(`$('#serverfiles').append("<li>%s</li>")`, f)
 		Defaultweb.UI.Eval(jsStr)
 	}
 }
 
 //向服务端发送head
-func (c Comtask) DownloadHeadSend(name string) {
+func (c *Comtask) DownloadHeadSend(name string) {
 	hlr.Downname = name
 	bs := []byte(name)
 	message := msg.Msg{
@@ -92,11 +99,11 @@ func (c Comtask) DownloadHeadSend(name string) {
 		Datalen: uint32(len(bs)),
 		Data:    bs,
 	}
-
+	log.Debug(message)
 	hlr.Sendmsg(message)
 }
 
-func (c Comtask) CDownloadheadHandle(data []byte) {
+func (c *Comtask) CDownloadheadHandle(data []byte) {
 	var fhead FileHead
 	err := json.Unmarshal(data, &fhead)
 	if err != nil {
@@ -106,36 +113,56 @@ func (c Comtask) CDownloadheadHandle(data []byte) {
 	c.Name = fhead.Name
 	c.Size = fhead.Size
 	c.Downloadfileoff = 0
+	log.Debug(c.Name, c.Size)
+
+	bs := []byte("downloadbody")
 	message := msg.Msg{
 		Id:      handler.Cdownloadbody,
-		Datalen: 0,
+		Datalen: uint32(len(bs)),
+		Data:    bs,
 	}
 
 	hlr.Sendmsg(message)
-}
 
-func (c Comtask) CDownloadbodyHandle(data []byte) {
 	curpath := config.Cfg.Section("file").Key("clientpath").MustString(config.GetRootdir())
 	path := curpath + `\` + c.Name
-	file, err := os.Create(path)
-	defer file.Close()
+	c.Filehandler, err = os.Create(path)
 	if err != nil {
 		log.Error(err)
 		return
 	}
-
-	file.WriteAt(data, c.Downloadfileoff)
-	c.Downloadfileoff += int64(len(data))
-	if c.Downloadfileoff >= c.Size {
-		return
-	}
 }
 
-func (c Comtask) Upload(name string) {
+func (c *Comtask) CDownloadbodyHandle(data []byte) {
+	if c.Filehandler == nil {
+		return
+	}
+
+	log.Debug(c.Downloadfileoff, c.Size)
+	c.Filehandler.WriteAt(data, c.Downloadfileoff)
+	c.Downloadfileoff += int64(len(data))
+	if c.Downloadfileoff >= c.Size {
+		c.Filehandler.Close()
+		log.Debug("download complete")
+		return
+	}
+
+	bs := []byte("ok")
+	message := msg.Msg{
+		Id:      handler.Cdownloadbody_nextpack,
+		Datalen: uint32(len(bs)),
+		Data:    bs,
+	}
+	log.Debug(message)
+	hlr.Sendmsg(message)
+}
+
+func (c *Comtask) Upload(name string) {
 	log.Debug(name)
-	curpath := config.GetRootdir() + `\` + name
+	curpath := config.Cfg.Section("file").Key("clientpath").MustString(config.GetRootdir()) + `\` + name
 
 	file, err := os.Open(curpath)
+	defer file.Close()
 	if err != nil {
 		log.Error(err)
 		return
@@ -176,7 +203,7 @@ func (c Comtask) Upload(name string) {
 		Id:      handler.Cuploadbody,
 		Datalen: 1024,
 	}
-	for i := int64(0); i < blocksize; {
+	for i := int64(0); i < blocksize; i++ {
 		_, err = file.ReadAt(outbytes, i*1024)
 		if err != nil {
 			log.Error(err)
@@ -184,7 +211,8 @@ func (c Comtask) Upload(name string) {
 		}
 		message.Data = outbytes
 		hlr.Sendmsg(message)
-		<-hlr.Uploadbodych
+		<-c.Uploadbody_nextpackch
+		log.Debug(i)
 	}
 	n, _ := file.ReadAt(outbytes, blocksize*1024)
 	if n > 0 {
@@ -193,4 +221,9 @@ func (c Comtask) Upload(name string) {
 		hlr.Sendmsg(message)
 	}
 
+}
+
+//收到服务器响应
+func (c *Comtask) CUploadbodyNextpackHandle(data []byte) {
+	c.Uploadbody_nextpackch <- true
 }

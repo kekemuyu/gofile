@@ -16,23 +16,25 @@ const (
 
 	Cuploadhead
 	Cuploadbody
+	Suploadbody_nextpack
 
 	Cdownloadhead
 	Cdownloadbody
+	Cdownloadbody_nextpack
 
 	Sdownloadhead
 	Sdownloadbody
 )
 
 type Handler struct {
-	Rwc          io.ReadWriteCloser
-	Listch       chan []string
-	Downname     string
-	Downoff      int64
-	Downsize     int64
-	Uploadbodych chan bool
-	Chandler     protocol.CHandler
-	Shandler     protocol.SHandler
+	Rwc      io.ReadWriteCloser
+	Listch   chan []string
+	Downname string
+	Downoff  int64
+	Downsize int64
+
+	Chandler protocol.CHandler
+	Shandler protocol.SHandler
 }
 
 func (h *Handler) HandleLoop() {
@@ -54,7 +56,7 @@ func (h *Handler) HandleLoop() {
 			continue
 		}
 
-		log.Debug(message)
+		// log.Debug(message)
 		if message.Datalen > 0 {
 
 			message.Data = make([]byte, message.Datalen)
@@ -97,31 +99,38 @@ func (h *Handler) parseMsg(msg msg.Msg) {
 		log.Debug("Slist")
 		h.Chandler.CListHandle(msg.Data)
 	case Clistuppage:
-		log.Debug("Clistuppage")
+		// log.Debug("Clistuppage")
 		h.Shandler.SListUppageHandle(msg.Data)
 	case Slistuppage:
-		log.Debug("Slistuppage")
+		// log.Debug("Slistuppage")
 		h.Chandler.CListUppageHandle(msg.Data)
 
 	case Cuploadhead:
-		log.Debug("Cuploadhead")
+		// log.Debug("Cuploadhead")
 		h.Shandler.SUploadheadHandle(msg.Data)
 	case Cuploadbody:
-		log.Debug("Cuploadbody")
+		// log.Debug("Cuploadbody")
 		h.Shandler.SUploadbodyHandle(msg.Data)
+	case Suploadbody_nextpack: //服务端收到数据后，发送响应到客户端
+		// log.Debug("Suploadbody")
+		h.Chandler.CUploadbodyNextpackHandle(msg.Data)
 
 	case Cdownloadhead:
-		log.Debug("Cdownloadhead")
+		// log.Debug("Cdownloadhead")
 		h.Shandler.SDownloadheadHandle(msg.Data)
 	case Cdownloadbody:
-		log.Debug("Cdownloadbody")
-		h.Shandler.SDownloadbodyHandle(msg.Data)
+		// log.Debug("Cdownloadbody")
+		go h.Shandler.SDownloadbodyHandle(msg.Data)
 	case Sdownloadhead:
 
-		log.Debug("Sdownloadhead")
+		// log.Debug("Sdownloadhead")
 		h.Chandler.CDownloadheadHandle(msg.Data)
 	case Sdownloadbody:
-		log.Debug("Sdownloadbody")
+		// log.Debug("Sdownloadbody")
 		h.Chandler.CDownloadbodyHandle(msg.Data)
+	case Cdownloadbody_nextpack:
+		// log.Debug("Cdownloadbody_nextpack")
+		h.Shandler.SDownloadbodyNextpackHandle(msg.Data)
 	}
+
 }

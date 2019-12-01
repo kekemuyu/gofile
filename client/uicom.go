@@ -9,6 +9,7 @@ import (
 	"gofile/util"
 	"io/ioutil"
 	"os"
+	"strings"
 
 	// "path/filepath"
 
@@ -24,10 +25,10 @@ func Opencom(comnum string, baudrate int) bool {
 	}
 
 	hlr = handler.Handler{
-		Rwc:          irw,
-		Listch:       make(chan []string, 10),
-		Uploadbodych: make(chan bool),
-		Chandler:     DefaultComtask,
+		Rwc:    irw,
+		Listch: make(chan []string, 10),
+
+		Chandler: &DefaultComtask,
 	}
 	log.Debug("Opencom:", hlr)
 	go hlr.HandleLoop()
@@ -44,14 +45,16 @@ func Sendmsg(message msg.Msg) {
 	hlr.Send(bs)
 }
 
-func Browsecurpath(bpath string) byte {
+func Browseclientpath(bpath string) byte {
 
 	curpath := config.Cfg.Section("file").Key("clientpath").MustString(config.GetRootdir())
 	log.Debug(curpath)
+
 	if bpath != "" {
+
 		curpath += `\` + bpath
 	}
-
+	dispath := strings.Replace(curpath, `\`, "/", -1)
 	s, err := os.Stat(curpath)
 	if err != nil {
 		log.Error(err)
@@ -59,12 +62,12 @@ func Browsecurpath(bpath string) byte {
 	}
 	if s.IsDir() {
 		files, _ := ioutil.ReadDir(curpath)
-		jsStr1 := `$("#filesgroup").find("li").remove()`
+		jsStr1 := fmt.Sprintf(`$('#clientpath').val("%s");$("#clientfiles").find("li").remove()`, dispath)
 		Defaultweb.UI.Eval(jsStr1)
 		for _, f := range files {
 			log.Debug(f.Name())
 
-			jsStr := fmt.Sprintf(`$('#filesgroup').append("<li>%s</li>")`, f.Name())
+			jsStr := fmt.Sprintf(`$('#clientfiles').append("<li>%s</li>")`, f.Name())
 			Defaultweb.UI.Eval(jsStr)
 		}
 		config.Cfg.Section("file").Key("clientpath").SetValue(curpath)
@@ -72,24 +75,25 @@ func Browsecurpath(bpath string) byte {
 		config.Save()
 		return 0
 	} else {
-		files, _ := ioutil.ReadDir(curpath)
-		jsStr1 := `$("#filesgroup").find("li").remove()`
-		Defaultweb.UI.Eval(jsStr1)
-		for _, f := range files {
-			log.Debug(f.Name())
+		// files, _ := ioutil.ReadDir(curpath)
+		// jsStr1 := `$("#filesgroup").find("li").remove()`
+		// Defaultweb.UI.Eval(jsStr1)
+		// for _, f := range files {
+		// 	log.Debug(f.Name())
 
-			jsStr := fmt.Sprintf(`$('#filesgroup').append("<li>%s</li>")`, f.Name())
-			Defaultweb.UI.Eval(jsStr)
-		}
+		// 	jsStr := fmt.Sprintf(`$('#filesgroup').append("<li>%s</li>")`, f.Name())
+		// 	Defaultweb.UI.Eval(jsStr)
+		// }
 		return 1
 	}
 
 }
 
-func Browseruppage() {
+func Browseclientuppage() {
 	curpath := config.Cfg.Section("file").Key("clientpath").MustString(config.GetRootdir())
 	log.Debug(curpath)
 	curpath = util.GetParentDirectory(curpath)
+	dispath := strings.Replace(curpath, `\`, "/", -1)
 	_, err := os.Stat(curpath)
 	if err != nil {
 		log.Error(err)
@@ -97,12 +101,13 @@ func Browseruppage() {
 	}
 
 	files, _ := ioutil.ReadDir(curpath)
-	jsStr1 := `$("#filesgroup").find("li").remove()`
+	jsStr1 := fmt.Sprintf(`$('#clientpath').val("%s");$("#clientfiles").find("li").remove()`, dispath)
+
 	Defaultweb.UI.Eval(jsStr1)
 	for _, f := range files {
 		log.Debug(f.Name())
 
-		jsStr := fmt.Sprintf(`$('#filesgroup').append("<li>%s</li>")`, f.Name())
+		jsStr := fmt.Sprintf(`$('#clientfiles').append("<li>%s</li>")`, f.Name())
 		Defaultweb.UI.Eval(jsStr)
 	}
 	config.Cfg.Section("file").Key("clientpath").SetValue(curpath)

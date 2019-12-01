@@ -20,27 +20,31 @@ type FileHead struct {
 }
 
 type Comtask struct {
-	Serverpath    string
-	Name          string
-	Size          int64
-	Handler       *os.File
-	Uploadfileoff int64
+	Serverpath              string
+	Name                    string
+	Size                    int64
+	Handler                 *os.File
+	Uploadfileoff           int64
+	Downloadbody_nextpackch chan bool
 }
 
-var DefaultComtask Comtask
+var DefaultComtask = Comtask{
+	Downloadbody_nextpackch: make(chan bool),
+}
 
 //将当前目录文件发送给客户端
 func (c Comtask) SListHandle(data []byte) {
 	log.Debug(data)
 	curpath := config.Cfg.Section("file").Key("serverpath").MustString(config.GetRootdir())
-	path := curpath
-	if len(data) != 1 {
-		path = curpath + `\` + string(data)
+	if (len(data) == 4) && (string(data[:4]) == "init") {
+
+	} else {
+		curpath = curpath + `\` + string(data)
 	}
 
-	log.Debug(path)
+	log.Debug(curpath)
 
-	files, _ := ioutil.ReadDir(path)
+	files, _ := ioutil.ReadDir(curpath)
 
 	var filenames []string
 	for _, f := range files {
@@ -65,51 +69,51 @@ func (c Comtask) SListHandle(data []byte) {
 			Data:    bs,
 		}
 		hlr.Sendmsg(message)
-		config.Cfg.Section("file").Key("serverpath").SetValue(path)
+		config.Cfg.Section("file").Key("serverpath").SetValue(curpath)
 		config.Save()
 	}
 }
 
 //将上一页目录文件发送给客户端
 func (c Comtask) SListUppageHandle(data []byte) {
+	if len(data) == 2 && (string(data) == "up") {
+		curpath := config.Cfg.Section("file").Key("serverpath").MustString(config.GetRootdir())
+		curpath = util.GetParentDirectory(curpath)
 
-	curpath := config.Cfg.Section("file").Key("serverpath").MustString(config.GetRootdir())
-	curpath = util.GetParentDirectory(curpath)
-	path := curpath + `\` + string(data)
+		log.Debug(curpath)
 
-	log.Debug(path)
+		files, _ := ioutil.ReadDir(curpath)
 
-	files, _ := ioutil.ReadDir(path)
+		var filenames []string
+		for _, f := range files {
+			filenames = append(filenames, f.Name())
+			log.Debug(f.Name())
 
-	var filenames []string
-	for _, f := range files {
-		filenames = append(filenames, f.Name())
-		log.Debug(f.Name())
-
-	}
-
-	filemap := make(map[string][]string)
-	filemap["value"] = filenames
-
-	bs, err := json.Marshal(filemap)
-	if err != nil {
-		log.Error(err)
-		return
-	}
-
-	if len(filenames) > 0 {
-		message := msg.Msg{
-			Id:      handler.Slistuppage,
-			Datalen: uint32(len(bs)),
-			Data:    bs,
 		}
-		hlr.Sendmsg(message)
-		config.Cfg.Section("file").Key("serverpath").SetValue(path)
-		config.Save()
+
+		filemap := make(map[string][]string)
+		filemap["value"] = filenames
+
+		bs, err := json.Marshal(filemap)
+		if err != nil {
+			log.Error(err)
+			return
+		}
+
+		if len(filenames) > 0 {
+			message := msg.Msg{
+				Id:      handler.Slistuppage,
+				Datalen: uint32(len(bs)),
+				Data:    bs,
+			}
+			hlr.Sendmsg(message)
+			config.Cfg.Section("file").Key("serverpath").SetValue(curpath)
+			config.Save()
+		}
 	}
 }
 
-func (c Comtask) SUploadheadHandle(data []byte) {
+func (c *Comtask) SUploadheadHandle(data []byte) {
 
 	var fhead FileHead
 	var err error
@@ -127,16 +131,26 @@ func (c Comtask) SUploadheadHandle(data []byte) {
 	c.Uploadfileoff = 0
 }
 
-func (c Comtask) SUploadbodyHandle(data []byte) {
+func (c *Comtask) SUploadbodyHandle(data []byte) {
+	message := msg.Msg{
+		Id:      handler.Suploadbody_nextpack,
+		Datalen: 2,
+		Data:    []byte("ok"),
+	}
+
+	hlr.Sendmsg(message)
 	c.Handler.WriteAt(data, c.Uploadfileoff)
 	c.Uploadfileoff += int64(len(data))
+	log.Debug(c.Uploadfileoff, c.Size)
 	if c.Uploadfileoff >= c.Size {
 		c.Handler.Close()
+		log.Debug("upload complete")
 		return
 	}
+
 }
 
-func (c Comtask) SDownloadheadHandle(data []byte) {
+func (c *Comtask) SDownloadheadHandle(data []byte) {
 	curpath := config.Cfg.Section("file").Key("serverpath").MustString(config.GetRootdir())
 	path := curpath + `\` + string(data)
 	var err error
@@ -168,7 +182,8 @@ func (c Comtask) SDownloadheadHandle(data []byte) {
 	hlr.Sendmsg(message)
 }
 
-func (c Comtask) SDownloadbodyHandle(data []byte) {
+func (c *Comtask) SDownloadbodyHandle(data []byte) {
+	defer c.Handler.Close()
 	blocksize := c.Size / 1024
 	lastsize := c.Size % 1024
 	log.Debug(blocksize, lastsize)
@@ -179,7 +194,8 @@ func (c Comtask) SDownloadbodyHandle(data []byte) {
 		Id:      handler.Sdownloadbody,
 		Datalen: 1024,
 	}
-	for i := int64(0); i < blocksize; {
+
+	for i := int64(0); i < blocksize; i++ {
 		_, err := c.Handler.ReadAt(outbytes, i*1024)
 		if err != nil {
 			log.Error(err)
@@ -187,7 +203,10 @@ func (c Comtask) SDownloadbodyHandle(data []byte) {
 		}
 		message.Data = outbytes
 		hlr.Sendmsg(message)
+		log.Debug(i)
+		<-c.Downloadbody_nextpackch
 	}
+
 	if lastsize > 0 {
 		n, _ := c.Handler.ReadAt(outbytes, blocksize*1024)
 		if n > 0 {
@@ -197,5 +216,9 @@ func (c Comtask) SDownloadbodyHandle(data []byte) {
 
 		}
 	}
-	c.Handler.Close()
+
+}
+
+func (c *Comtask) SDownloadbodyNextpackHandle(data []byte) {
+	c.Downloadbody_nextpackch <- true
 }
