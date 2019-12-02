@@ -47,17 +47,27 @@ func Sendmsg(message msg.Msg) {
 
 func Browseclientpath(bpath string) byte {
 
-	curpath := config.Cfg.Section("file").Key("clientpath").MustString(config.GetRootdir())
+	curpath := config.Cfg.Section("file1").Key("clientpath").MustString(config.GetRootdir())
 	log.Debug(curpath)
 
 	if bpath != "" {
-
 		curpath += `\` + bpath
+	}
+	log.Debug(curpath)
+	if curpath[len(curpath)-2:] == `:\` {
+		curpath = curpath + `\`
+	}
+	if curpath[len(curpath)-1:] == `:` {
+		curpath = curpath + `\\`
 	}
 	dispath := strings.Replace(curpath, `\`, "/", -1)
 	s, err := os.Stat(curpath)
 	if err != nil {
 		log.Error(err)
+		log.Debug(config.GetRootdir())
+		config.Cfg.Section("file1").Key("clientpath").SetValue(config.GetRootdir())
+
+		config.Save()
 		return 3
 	}
 	if s.IsDir() {
@@ -70,7 +80,7 @@ func Browseclientpath(bpath string) byte {
 			jsStr := fmt.Sprintf(`$('#clientfiles').append("<li>%s</li>")`, f.Name())
 			Defaultweb.UI.Eval(jsStr)
 		}
-		config.Cfg.Section("file").Key("clientpath").SetValue(curpath)
+		config.Cfg.Section("file1").Key("clientpath").SetValue(curpath)
 
 		config.Save()
 		return 0
@@ -90,9 +100,14 @@ func Browseclientpath(bpath string) byte {
 }
 
 func Browseclientuppage() {
-	curpath := config.Cfg.Section("file").Key("clientpath").MustString(config.GetRootdir())
+	curpath := config.Cfg.Section("file1").Key("clientpath").MustString(config.GetRootdir())
 	log.Debug(curpath)
-	curpath = util.GetParentDirectory(curpath)
+	if curpath[len(curpath)-2:] != `\\` && curpath[len(curpath)-2:] != `//` {
+		curpath = util.GetParentDirectory(curpath)
+	}
+	if curpath[len(curpath)-1:] == `:` {
+		curpath = curpath + `\\`
+	}
 	dispath := strings.Replace(curpath, `\`, "/", -1)
 	_, err := os.Stat(curpath)
 	if err != nil {
@@ -110,7 +125,7 @@ func Browseclientuppage() {
 		jsStr := fmt.Sprintf(`$('#clientfiles').append("<li>%s</li>")`, f.Name())
 		Defaultweb.UI.Eval(jsStr)
 	}
-	config.Cfg.Section("file").Key("clientpath").SetValue(curpath)
+	config.Cfg.Section("file1").Key("clientpath").SetValue(curpath)
 
 	config.Save()
 

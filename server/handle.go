@@ -35,16 +35,29 @@ var DefaultComtask = Comtask{
 //将当前目录文件发送给客户端
 func (c Comtask) SListHandle(data []byte) {
 	log.Debug(data)
-	curpath := config.Cfg.Section("file").Key("serverpath").MustString(config.GetRootdir())
+	curpath := config.Cfg.Section("file2").Key("serverpath").MustString(config.GetRootdir())
 	if (len(data) == 4) && (string(data[:4]) == "init") {
 
 	} else {
 		curpath = curpath + `\` + string(data)
+
 	}
 
 	log.Debug(curpath)
+	if curpath[len(curpath)-2:] == `:\` {
+		curpath = curpath + `\`
+	}
+	if curpath[len(curpath)-1:] == `:` {
+		curpath = curpath + `\\`
+	}
+	files, err := ioutil.ReadDir(curpath)
+	if err != nil {
+		log.Error(err)
+		config.Cfg.Section("file2").Key("serverpath").SetValue(config.GetRootdir())
 
-	files, _ := ioutil.ReadDir(curpath)
+		config.Save()
+		return
+	}
 
 	var filenames []string
 	for _, f := range files {
@@ -59,6 +72,7 @@ func (c Comtask) SListHandle(data []byte) {
 	bs, err := json.Marshal(filemap)
 	if err != nil {
 		log.Error(err)
+
 		return
 	}
 
@@ -69,7 +83,7 @@ func (c Comtask) SListHandle(data []byte) {
 			Data:    bs,
 		}
 		hlr.Sendmsg(message)
-		config.Cfg.Section("file").Key("serverpath").SetValue(curpath)
+		config.Cfg.Section("file2").Key("serverpath").SetValue(curpath)
 		config.Save()
 	}
 }
@@ -77,9 +91,14 @@ func (c Comtask) SListHandle(data []byte) {
 //将上一页目录文件发送给客户端
 func (c Comtask) SListUppageHandle(data []byte) {
 	if len(data) == 2 && (string(data) == "up") {
-		curpath := config.Cfg.Section("file").Key("serverpath").MustString(config.GetRootdir())
-		curpath = util.GetParentDirectory(curpath)
-
+		curpath := config.Cfg.Section("file2").Key("serverpath").MustString(config.GetRootdir())
+		log.Debug(curpath[len(curpath)-1:])
+		if curpath[len(curpath)-2:] != `\\` && curpath[len(curpath)-2:] != `//` {
+			curpath = util.GetParentDirectory(curpath)
+		}
+		if curpath[len(curpath)-1:] == `:` {
+			curpath = curpath + `\\`
+		}
 		log.Debug(curpath)
 
 		files, _ := ioutil.ReadDir(curpath)
@@ -107,7 +126,7 @@ func (c Comtask) SListUppageHandle(data []byte) {
 				Data:    bs,
 			}
 			hlr.Sendmsg(message)
-			config.Cfg.Section("file").Key("serverpath").SetValue(curpath)
+			config.Cfg.Section("file2").Key("serverpath").SetValue(curpath)
 			config.Save()
 		}
 	}
@@ -121,7 +140,7 @@ func (c *Comtask) SUploadheadHandle(data []byte) {
 		log.Error(err)
 	}
 	log.Debug(fhead)
-	curpath := config.Cfg.Section("file").Key("serverpath").MustString(config.GetRootdir())
+	curpath := config.Cfg.Section("file2").Key("serverpath").MustString(config.GetRootdir())
 	path := curpath + `\` + fhead.Name
 	if c.Handler, err = os.Create(path); err != nil {
 		log.Error(err)
@@ -151,7 +170,7 @@ func (c *Comtask) SUploadbodyHandle(data []byte) {
 }
 
 func (c *Comtask) SDownloadheadHandle(data []byte) {
-	curpath := config.Cfg.Section("file").Key("serverpath").MustString(config.GetRootdir())
+	curpath := config.Cfg.Section("file2").Key("serverpath").MustString(config.GetRootdir())
 	path := curpath + `\` + string(data)
 	var err error
 	c.Handler, err = os.Open(path)

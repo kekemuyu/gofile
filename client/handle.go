@@ -124,7 +124,7 @@ func (c *Comtask) CDownloadheadHandle(data []byte) {
 
 	hlr.Sendmsg(message)
 
-	curpath := config.Cfg.Section("file").Key("clientpath").MustString(config.GetRootdir())
+	curpath := config.Cfg.Section("file1").Key("clientpath").MustString(config.GetRootdir())
 	path := curpath + `\` + c.Name
 	c.Filehandler, err = os.Create(path)
 	if err != nil {
@@ -159,7 +159,7 @@ func (c *Comtask) CDownloadbodyHandle(data []byte) {
 
 func (c *Comtask) Upload(name string) {
 	log.Debug(name)
-	curpath := config.Cfg.Section("file").Key("clientpath").MustString(config.GetRootdir()) + `\` + name
+	curpath := config.Cfg.Section("file1").Key("clientpath").MustString(config.GetRootdir()) + `\` + name
 
 	file, err := os.Open(curpath)
 	defer file.Close()
