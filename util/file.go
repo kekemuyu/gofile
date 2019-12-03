@@ -20,5 +20,29 @@ func substr(s string, pos, length int) string {
 }
 
 func GetParentDirectory(dirctory string) string {
-	return substr(dirctory, 0, strings.LastIndex(dirctory, `/`))
+
+	if dirctory == "" {
+		return dirctory
+	}
+	if len(dirctory) == 4 && dirctory[2:] == "//" {
+		return dirctory
+	}
+	if len(dirctory) == 1 && dirctory == "/" {
+		return dirctory
+	}
+	if strings.LastIndex(dirctory, "/") == 0 {
+		return "/"
+	}
+
+	if len(dirctory) > 4 { //like D://root
+
+	}
+	re := substr(dirctory, 0, strings.LastIndex(dirctory, `/`))
+	if len(re) == 3 {
+		if string(dirctory[1]) == ":" {
+			return re + "/"
+		}
+	}
+
+	return re
 }

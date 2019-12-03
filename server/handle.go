@@ -9,8 +9,8 @@ import (
 
 	"io/ioutil"
 
-	"os"
 	"log"
+	"os"
 	//log "github.com/donnie4w/go-logger/logger"
 )
 
@@ -38,20 +38,16 @@ func (c Comtask) SListHandle(data []byte) {
 	curpath := config.Cfg.Section("file2").Key("serverpath").MustString(config.GetRootdir())
 	if (len(data) == 4) && (string(data[:4]) == "init") {
 
-	}else if (len(data)==1)&&(string(data)=="/'"){
-	
 	} else {
-		curpath = curpath + `/` + string(data)
-
+		if string(curpath[len(curpath)-1]) != "/" {
+			curpath += `/` + string(data)
+		} else {
+			curpath += string(data)
+		}
 	}
 
 	log.Println(curpath)
-	if curpath[len(curpath)-2:] == `:/` {
-		curpath = curpath + `/`
-	}
-	if curpath[len(curpath)-1:] == `:` {
-		curpath = curpath + `//`
-	}
+
 	files, err := ioutil.ReadDir(curpath)
 	if err != nil {
 		log.Println(err)
@@ -94,21 +90,9 @@ func (c Comtask) SListHandle(data []byte) {
 func (c Comtask) SListUppageHandle(data []byte) {
 	if len(data) == 2 && (string(data) == "up") {
 		curpath := config.Cfg.Section("file2").Key("serverpath").MustString(config.GetRootdir())
-		log.Println(curpath)		
-		
-		if len(curpath)>1{
-			if curpath[len(curpath)-2:] != `\\` && curpath[len(curpath)-2:] != `//` {
-				curpath = util.GetParentDirectory(curpath)
-				if curpath==""{
-					curpath="/"		
-				}
-			}
-		}   
-		
-		log.Println(curpath) 
-		if curpath[len(curpath)-1:] == `:` {
-			curpath = curpath + `//`
-		}
+
+		curpath = util.GetParentDirectory(curpath)
+
 		log.Println(curpath)
 
 		files, _ := ioutil.ReadDir(curpath)

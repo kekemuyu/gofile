@@ -40,6 +40,7 @@ func (m *Myweb) Run() {
 	})
 
 	ui.Bind("opencom", Opencom)
+	ui.Bind("getdisk", Getdisk)
 	ui.Bind("browseclientpath", Browseclientpath)
 	ui.Bind("browseclientuppage", Browseclientuppage)
 	ui.Bind("upload", DefaultComtask.Upload)

@@ -51,6 +51,11 @@
                 <button class=" btn btn-default " type="button" id="btnset">断开</button>
             </div>
         </div> -->
+        
+        <select id="disk" style="width: 80px" onChange="diskSelect()">
+            <option value="0">三相四线</option>
+            <option value="1">三相三线</option>
+        </select>
         <input id="clientpath" type="text" name="">
         <button class=" btn btn-success " type="button" id="btnPageup">向上</button>
         <button class=" btn btn-success " type="button" id="btnupload">上传</button>
@@ -169,6 +174,7 @@ $('#btnComOpen').click(async function() {
 
     ok = await opencom(Comnum, Baudrate)
     if (ok) {
+        await getdisk();//更新磁盘
         alert('打开串口成功');
         isdir = await browseclientpath("");
         if ((isdir == 0) || (isdir == 3)) {
@@ -193,6 +199,11 @@ $('#btnComClose').click(function() {
 });
 
 //客户端操作
+
+function diskSelect(){
+    console.log("diskSelect",$('#disk option:selected').val(),$(' option:selected' ).text());
+}
+
 $('#btnPageup').click(async function() {
     await browseclientuppage();
 });

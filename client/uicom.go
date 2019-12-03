@@ -9,7 +9,6 @@ import (
 	"gofile/util"
 	"io/ioutil"
 	"os"
-	"strings"
 
 	// "path/filepath"
 
@@ -51,16 +50,15 @@ func Browseclientpath(bpath string) byte {
 	log.Debug(curpath)
 
 	if bpath != "" {
-		curpath += `/` + bpath
+		if string(curpath[len(curpath)-1]) != "/" {
+			curpath += `/` + bpath
+		} else {
+			curpath += bpath
+		}
+
 	}
 	log.Debug(curpath)
-	if curpath[len(curpath)-2:] == `:/` {
-		curpath = curpath + `/`
-	}
-	if curpath[len(curpath)-1:] == `:` {
-		curpath = curpath + `//`
-	}
-	dispath := strings.Replace(curpath, `\`, "/", -1)
+
 	s, err := os.Stat(curpath)
 	if err != nil {
 		log.Error(err)
@@ -72,7 +70,7 @@ func Browseclientpath(bpath string) byte {
 	}
 	if s.IsDir() {
 		files, _ := ioutil.ReadDir(curpath)
-		jsStr1 := fmt.Sprintf(`$('#clientpath').val("%s");$("#clientfiles").find("li").remove()`, dispath)
+		jsStr1 := fmt.Sprintf(`$('#clientpath').val("%s");$("#clientfiles").find("li").remove()`, curpath)
 		Defaultweb.UI.Eval(jsStr1)
 		for _, f := range files {
 			log.Debug(f.Name())
@@ -102,13 +100,9 @@ func Browseclientpath(bpath string) byte {
 func Browseclientuppage() {
 	curpath := config.Cfg.Section("file1").Key("clientpath").MustString(config.GetRootdir())
 	log.Debug(curpath)
-	if curpath[len(curpath)-2:] != `\\` && curpath[len(curpath)-2:] != `//` {
-		curpath = util.GetParentDirectory(curpath)
-	}
-	if curpath[len(curpath)-1:] == `:` {
-		curpath = curpath + `//`
-	}
-	dispath := strings.Replace(curpath, `\`, "/", -1)
+
+	curpath = util.GetParentDirectory(curpath)
+
 	_, err := os.Stat(curpath)
 	if err != nil {
 		log.Error(err)
@@ -116,7 +110,7 @@ func Browseclientuppage() {
 	}
 
 	files, _ := ioutil.ReadDir(curpath)
-	jsStr1 := fmt.Sprintf(`$('#clientpath').val("%s");$("#clientfiles").find("li").remove()`, dispath)
+	jsStr1 := fmt.Sprintf(`$('#clientpath').val("%s");$("#clientfiles").find("li").remove()`, curpath)
 
 	Defaultweb.UI.Eval(jsStr1)
 	for _, f := range files {
