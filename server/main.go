@@ -3,23 +3,27 @@ package main
 import (
 	"gofile/config"
 	"gofile/handler"
-	_ "gofile/log"
+	//_ "gofile/log"
 
 	"gofile/com"
 	"gofile/server/net"
 	"runtime"
-
-	"github.com/donnie4w/go-logger/logger"
+	"log"
+	//"github.com/donnie4w/go-logger/logger"
 )
+
+func init(){
+	log.SetFlags(log.Ldate|log.Lshortfile)
+}
 
 func ConfigRuntime() {
 	nuCPU := runtime.NumCPU()
 	runtime.GOMAXPROCS(nuCPU)
-	logger.Debug("Running with CPUs:", nuCPU)
+	log.Println("Running with CPUs:", nuCPU)
 }
 
 func AppVersion() {
-	logger.Debug("app-version:", config.Cfg.Section("").Key("app_ver").String())
+	log.Println("app-version:", config.Cfg.Section("").Key("app_ver").String())
 }
 
 var hlr handler.Handler
@@ -34,9 +38,9 @@ func main() {
 	ConfigRuntime()
 	AppVersion()
 	if err != nil {
-		logger.Error("打开串口错误：", err)
+		log.Println("打开串口错误：", err)
 	} else {
-		logger.Debug("打开串口：", portName)
+		log.Println("打开串口：", portName)
 
 		hlr = handler.Handler{
 			Rwc:    defaultCom,
@@ -46,9 +50,9 @@ func main() {
 		}
 
 		go hlr.HandleLoop() //start comm server
-		logger.Debug(defaultCom)
+		log.Println(defaultCom)
 	}
-	logger.Debug("net serve:", netport)
+	log.Println("net serve:", netport)
 	net.DefaultServer.Run(netport) //start net server
 
 }

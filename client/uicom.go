@@ -51,14 +51,14 @@ func Browseclientpath(bpath string) byte {
 	log.Debug(curpath)
 
 	if bpath != "" {
-		curpath += `\` + bpath
+		curpath += `/` + bpath
 	}
 	log.Debug(curpath)
-	if curpath[len(curpath)-2:] == `:\` {
-		curpath = curpath + `\`
+	if curpath[len(curpath)-2:] == `:/` {
+		curpath = curpath + `/`
 	}
 	if curpath[len(curpath)-1:] == `:` {
-		curpath = curpath + `\\`
+		curpath = curpath + `//`
 	}
 	dispath := strings.Replace(curpath, `\`, "/", -1)
 	s, err := os.Stat(curpath)
@@ -106,7 +106,7 @@ func Browseclientuppage() {
 		curpath = util.GetParentDirectory(curpath)
 	}
 	if curpath[len(curpath)-1:] == `:` {
-		curpath = curpath + `\\`
+		curpath = curpath + `//`
 	}
 	dispath := strings.Replace(curpath, `\`, "/", -1)
 	_, err := os.Stat(curpath)

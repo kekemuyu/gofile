@@ -14,7 +14,7 @@ func New(portnum string, baudrate uint) (io.ReadWriteCloser, error) {
 		DataBits:        8,
 		StopBits:        1,
 		ParityMode:      serial.PARITY_NONE,
-		MinimumReadSize: 50,
+		MinimumReadSize: 8,
 	}
 
 	var err error
