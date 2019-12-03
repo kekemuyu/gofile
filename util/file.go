@@ -20,5 +20,5 @@ func substr(s string, pos, length int) string {
 }
 
 func GetParentDirectory(dirctory string) string {
-	return substr(dirctory, 0, strings.LastIndex(dirctory, `\`))
+	return substr(dirctory, 0, strings.LastIndex(dirctory, `/`))
 }

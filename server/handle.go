@@ -10,8 +10,8 @@ import (
 	"io/ioutil"
 
 	"os"
-
-	log "github.com/donnie4w/go-logger/logger"
+	"log"
+	//log "github.com/donnie4w/go-logger/logger"
 )
 
 type FileHead struct {
@@ -34,25 +34,27 @@ var DefaultComtask = Comtask{
 
 //将当前目录文件发送给客户端
 func (c Comtask) SListHandle(data []byte) {
-	log.Debug(data)
+	log.Println(data)
 	curpath := config.Cfg.Section("file2").Key("serverpath").MustString(config.GetRootdir())
 	if (len(data) == 4) && (string(data[:4]) == "init") {
 
+	}else if (len(data)==1)&&(string(data)=="/'"){
+	
 	} else {
-		curpath = curpath + `\` + string(data)
+		curpath = curpath + `/` + string(data)
 
 	}
 
-	log.Debug(curpath)
-	if curpath[len(curpath)-2:] == `:\` {
-		curpath = curpath + `\`
+	log.Println(curpath)
+	if curpath[len(curpath)-2:] == `:/` {
+		curpath = curpath + `/`
 	}
 	if curpath[len(curpath)-1:] == `:` {
-		curpath = curpath + `\\`
+		curpath = curpath + `//`
 	}
 	files, err := ioutil.ReadDir(curpath)
 	if err != nil {
-		log.Error(err)
+		log.Println(err)
 		config.Cfg.Section("file2").Key("serverpath").SetValue(config.GetRootdir())
 
 		config.Save()
@@ -62,7 +64,7 @@ func (c Comtask) SListHandle(data []byte) {
 	var filenames []string
 	for _, f := range files {
 		filenames = append(filenames, f.Name())
-		log.Debug(f.Name())
+		log.Println(f.Name())
 
 	}
 
@@ -71,7 +73,7 @@ func (c Comtask) SListHandle(data []byte) {
 
 	bs, err := json.Marshal(filemap)
 	if err != nil {
-		log.Error(err)
+		log.Println(err)
 
 		return
 	}
@@ -92,21 +94,29 @@ func (c Comtask) SListHandle(data []byte) {
 func (c Comtask) SListUppageHandle(data []byte) {
 	if len(data) == 2 && (string(data) == "up") {
 		curpath := config.Cfg.Section("file2").Key("serverpath").MustString(config.GetRootdir())
-		log.Debug(curpath[len(curpath)-1:])
-		if curpath[len(curpath)-2:] != `\\` && curpath[len(curpath)-2:] != `//` {
-			curpath = util.GetParentDirectory(curpath)
-		}
+		log.Println(curpath)		
+		
+		if len(curpath)>1{
+			if curpath[len(curpath)-2:] != `\\` && curpath[len(curpath)-2:] != `//` {
+				curpath = util.GetParentDirectory(curpath)
+				if curpath==""{
+					curpath="/"		
+				}
+			}
+		}   
+		
+		log.Println(curpath) 
 		if curpath[len(curpath)-1:] == `:` {
-			curpath = curpath + `\\`
+			curpath = curpath + `//`
 		}
-		log.Debug(curpath)
+		log.Println(curpath)
 
 		files, _ := ioutil.ReadDir(curpath)
 
 		var filenames []string
 		for _, f := range files {
 			filenames = append(filenames, f.Name())
-			log.Debug(f.Name())
+			log.Println(f.Name())
 
 		}
 
@@ -115,7 +125,7 @@ func (c Comtask) SListUppageHandle(data []byte) {
 
 		bs, err := json.Marshal(filemap)
 		if err != nil {
-			log.Error(err)
+			log.Println(err)
 			return
 		}
 
@@ -137,13 +147,13 @@ func (c *Comtask) SUploadheadHandle(data []byte) {
 	var fhead FileHead
 	var err error
 	if err = json.Unmarshal(data, &fhead); err != nil {
-		log.Error(err)
+		log.Println(err)
 	}
-	log.Debug(fhead)
+	log.Println(fhead)
 	curpath := config.Cfg.Section("file2").Key("serverpath").MustString(config.GetRootdir())
-	path := curpath + `\` + fhead.Name
+	path := curpath + `/` + fhead.Name
 	if c.Handler, err = os.Create(path); err != nil {
-		log.Error(err)
+		log.Println(err)
 	}
 	c.Name = fhead.Name
 	c.Size = fhead.Size
@@ -160,10 +170,10 @@ func (c *Comtask) SUploadbodyHandle(data []byte) {
 	hlr.Sendmsg(message)
 	c.Handler.WriteAt(data, c.Uploadfileoff)
 	c.Uploadfileoff += int64(len(data))
-	log.Debug(c.Uploadfileoff, c.Size)
+	log.Println(c.Uploadfileoff, c.Size)
 	if c.Uploadfileoff >= c.Size {
 		c.Handler.Close()
-		log.Debug("upload complete")
+		log.Println("upload complete")
 		return
 	}
 
@@ -171,16 +181,16 @@ func (c *Comtask) SUploadbodyHandle(data []byte) {
 
 func (c *Comtask) SDownloadheadHandle(data []byte) {
 	curpath := config.Cfg.Section("file2").Key("serverpath").MustString(config.GetRootdir())
-	path := curpath + `\` + string(data)
+	path := curpath + `/` + string(data)
 	var err error
 	c.Handler, err = os.Open(path)
 	if err != nil {
-		log.Error(err)
+		log.Println(err)
 		return
 	}
 	fileinfo, err := os.Stat(path)
 	if err != nil {
-		log.Error(err)
+		log.Println(err)
 		return
 	}
 
@@ -190,14 +200,14 @@ func (c *Comtask) SDownloadheadHandle(data []byte) {
 	}
 	c.Name = fhead.Name
 	c.Size = fhead.Size
-	log.Debug(fhead)
+	log.Println(fhead)
 	bs, _ := json.Marshal(fhead)
 	message := msg.Msg{
 		Id:      handler.Sdownloadhead,
 		Datalen: uint32(len(bs)),
 		Data:    bs,
 	}
-	log.Debug(message)
+	log.Println(message)
 	hlr.Sendmsg(message)
 }
 
@@ -205,7 +215,7 @@ func (c *Comtask) SDownloadbodyHandle(data []byte) {
 	defer c.Handler.Close()
 	blocksize := c.Size / 1024
 	lastsize := c.Size % 1024
-	log.Debug(blocksize, lastsize)
+	log.Println(blocksize, lastsize)
 
 	outbytes := make([]byte, 1024)
 
@@ -217,12 +227,12 @@ func (c *Comtask) SDownloadbodyHandle(data []byte) {
 	for i := int64(0); i < blocksize; i++ {
 		_, err := c.Handler.ReadAt(outbytes, i*1024)
 		if err != nil {
-			log.Error(err)
+			log.Println(err)
 			return
 		}
 		message.Data = outbytes
 		hlr.Sendmsg(message)
-		log.Debug(i)
+		log.Println(i)
 		<-c.Downloadbody_nextpackch
 	}
 

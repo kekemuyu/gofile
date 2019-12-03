@@ -4,8 +4,8 @@ import (
 	"gofile/msg"
 	"gofile/protocol"
 	"io"
-
-	log "github.com/donnie4w/go-logger/logger"
+	"log"
+	//log "github.com/donnie4w/go-logger/logger"
 )
 
 const (
@@ -47,28 +47,39 @@ func (h *Handler) HandleLoop() {
 			continue
 		}
 		if err != nil {
-			log.Error("read head err:", err)
+			log.Println("read head err:", err)
 			continue
 		}
-
+		
+		log.Println(tmpb)
 		if message, err = msg.Unpack(tmpb); err != nil {
-			log.Error("unpack msg err:", err)
+			log.Println("unpack msg err:", err)
 			continue
 		}
 
-		// log.Debug(message)
+	    log.Println(message)
 		if message.Datalen > 0 {
 
 			message.Data = make([]byte, message.Datalen)
-			n, err = h.Rwc.Read(message.Data)
-			if n <= 0 {
-				log.Error("read data err:", err)
-				continue
+			
+			dataP:=0
+			for dataP<int(message.Datalen){
+				n, err = h.Rwc.Read(message.Data[dataP:])
+				if n>0{
+					dataP+=n
+				}
+				if err!=nil {
+					log.Println("read data err:", err)
+					break
+				}
 			}
-			h.parseMsg(message)
+			
+			
+			log.Println(message)
+			go h.parseMsg(message)
 		} else {
 			message.Data = make([]byte, 1)
-			h.parseMsg(message)
+			go h.parseMsg(message)
 		}
 	}
 }
@@ -80,7 +91,7 @@ func (h *Handler) Send(data []byte) {
 func (h *Handler) Sendmsg(message msg.Msg) {
 	bs, err := msg.Pack(message)
 	if err != nil {
-		log.Error("sendmsg err:", err)
+		log.Println("sendmsg err:", err)
 		return
 	}
 	h.Send(bs)
@@ -91,45 +102,45 @@ func (h *Handler) parseMsg(msg msg.Msg) {
 	switch msg.Id {
 
 	case Clist: //客户端发送浏览,服务端处理
-		log.Debug("Clist")
+		log.Println("Clist")
 
 		h.Shandler.SListHandle(msg.Data)
 
 	case Slist: //服务端发送浏览结果
-		log.Debug("Slist")
+		log.Println("Slist")
 		h.Chandler.CListHandle(msg.Data)
 	case Clistuppage:
-		// log.Debug("Clistuppage")
+		 log.Println("Clistuppage")
 		h.Shandler.SListUppageHandle(msg.Data)
 	case Slistuppage:
-		// log.Debug("Slistuppage")
+		 log.Println("Slistuppage")
 		h.Chandler.CListUppageHandle(msg.Data)
 
 	case Cuploadhead:
-		// log.Debug("Cuploadhead")
+		 log.Println("Cuploadhead")
 		h.Shandler.SUploadheadHandle(msg.Data)
 	case Cuploadbody:
-		// log.Debug("Cuploadbody")
+		 log.Println("Cuploadbody")
 		h.Shandler.SUploadbodyHandle(msg.Data)
 	case Suploadbody_nextpack: //服务端收到数据后，发送响应到客户端
-		// log.Debug("Suploadbody")
+		 log.Println("Suploadbody")
 		h.Chandler.CUploadbodyNextpackHandle(msg.Data)
 
 	case Cdownloadhead:
-		// log.Debug("Cdownloadhead")
+		 log.Println("Cdownloadhead")
 		h.Shandler.SDownloadheadHandle(msg.Data)
 	case Cdownloadbody:
-		// log.Debug("Cdownloadbody")
+		 log.Println("Cdownloadbody")
 		go h.Shandler.SDownloadbodyHandle(msg.Data)
 	case Sdownloadhead:
 
-		// log.Debug("Sdownloadhead")
+		 log.Println("Sdownloadhead")
 		h.Chandler.CDownloadheadHandle(msg.Data)
 	case Sdownloadbody:
-		// log.Debug("Sdownloadbody")
+		 log.Println("Sdownloadbody")
 		h.Chandler.CDownloadbodyHandle(msg.Data)
 	case Cdownloadbody_nextpack:
-		// log.Debug("Cdownloadbody_nextpack")
+		 log.Println("Cdownloadbody_nextpack")
 		h.Shandler.SDownloadbodyNextpackHandle(msg.Data)
 	}
 
