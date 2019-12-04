@@ -6,6 +6,7 @@ import (
 	"gofile/handler"
 	"gofile/msg"
 	"gofile/util"
+	"runtime"
 
 	"io/ioutil"
 
@@ -234,4 +235,19 @@ func (c *Comtask) SDownloadbodyHandle(data []byte) {
 
 func (c *Comtask) SDownloadbodyNextpackHandle(data []byte) {
 	c.Downloadbody_nextpackch <- true
+}
+
+func (c *Comtask) SListdisk(data []byte) {
+	if runtime.GOOS != "windows" {
+		return
+	}
+	dinfo := util.GetDiskInfo()
+	bs, _ := json.Marshal(dinfo)
+	message := msg.Msg{
+		Id:      handler.Slistdisk,
+		Datalen: uint32(len(bs)),
+		Data:    bs,
+	}
+	log.Println(message)
+	hlr.Sendmsg(message)
 }

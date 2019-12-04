@@ -6,6 +6,7 @@ import (
 	"gofile/config"
 	"gofile/handler"
 	"gofile/msg"
+	"strconv"
 
 	"os"
 
@@ -226,4 +227,29 @@ func (c *Comtask) Upload(name string) {
 //收到服务器响应
 func (c *Comtask) CUploadbodyNextpackHandle(data []byte) {
 	c.Uploadbody_nextpackch <- true
+}
+
+func (c *Comtask) GetServerDisk() {
+	bs := []byte("clistdisk")
+	message := msg.Msg{
+		Id:      handler.Clistdisk,
+		Datalen: uint32(len(bs)),
+		Data:    bs,
+	}
+	log.Debug(message)
+	hlr.Sendmsg(message)
+}
+
+func (c *Comtask) CListdisk(data []byte) {
+	var dinfo []string
+	err := json.Unmarshal(data, &dinfo)
+	if err != nil {
+		return
+	}
+	if len(dinfo) > 0 {
+		for k, v := range dinfo {
+			jsStr := fmt.Sprintf(`$('#serverDisk').append("<option value=%s>%s</option>")`, strconv.Itoa(k), v)
+			Defaultweb.UI.Eval(jsStr)
+		}
+	}
 }

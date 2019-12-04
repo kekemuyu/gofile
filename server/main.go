@@ -3,17 +3,18 @@ package main
 import (
 	"gofile/config"
 	"gofile/handler"
+
 	//_ "gofile/log"
 
 	"gofile/com"
 	"gofile/server/net"
-	"runtime"
 	"log"
+	"runtime"
 	//"github.com/donnie4w/go-logger/logger"
 )
 
-func init(){
-	log.SetFlags(log.Ldate|log.Lshortfile)
+func init() {
+	log.SetFlags(log.Ldate | log.Lshortfile)
 }
 
 func ConfigRuntime() {

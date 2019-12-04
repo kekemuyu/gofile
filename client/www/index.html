@@ -51,15 +51,16 @@
                 <button class=" btn btn-default " type="button" id="btnset">断开</button>
             </div>
         </div> -->
-        
-        <select id="disk" style="width: 80px" onChange="diskSelect()">
-            <option value="0">三相四线</option>
-            <option value="1">三相三线</option>
+        <select id="clientDisk" style="width: 80px" onChange="clientDiskSelect()">
+           
         </select>
         <input id="clientpath" type="text" name="">
         <button class=" btn btn-success " type="button" id="btnPageup">向上</button>
         <button class=" btn btn-success " type="button" id="btnupload">上传</button>
-        <input type="text" id="serverpath" name="" style="margin-left: 100px">
+        <select id="serverDisk" style="width: 80px" onChange="serverDiskSelect()">
+        
+        </select>
+        <input type="text" id="serverpath" name="">
         <button class=" btn btn-success " type="button" id="btnserverPageup">向上</button>
         <button class=" btn btn-success " type="button" id="btndownload">下载</button>
         <div class="row" style="width: 780px">
@@ -146,6 +147,7 @@ $(function() {
         await browseserverpath(selectname2);
     })
 
+    
     // $('#filesgroup').on("click", "li", function() {
     //     $('#filesgroup').find('li').css('background-color', 'white');
     //     $(this).css('background-color', '#e2f5ff');
@@ -174,7 +176,7 @@ $('#btnComOpen').click(async function() {
 
     ok = await opencom(Comnum, Baudrate)
     if (ok) {
-        await getdisk();//更新磁盘
+
         alert('打开串口成功');
         isdir = await browseclientpath("");
         if ((isdir == 0) || (isdir == 3)) {
@@ -186,6 +188,9 @@ $('#btnComOpen').click(async function() {
         }
         serverpathname = "init";
         await browseserverpath(serverpathname);
+
+        await getclientdisk(); //更新磁盘
+        await getserverdisk();
     } else {
 
         alert('打开串口失败');
@@ -199,9 +204,9 @@ $('#btnComClose').click(function() {
 });
 
 //客户端操作
-
-function diskSelect(){
-    console.log("diskSelect",$('#disk option:selected').val(),$(' option:selected' ).text());
+function clientDiskSelect() {
+    console.log("clientDisk", $('#clientDisk option:selected').val(), $('#clientDisk option:selected').text());
+    await browseclientpath($('#clientDisk option:selected').text());
 }
 
 $('#btnPageup').click(async function() {
@@ -215,6 +220,11 @@ $('#btnupload').click(async function() {
 
 
 //远端操作
+function serverDiskSelect() {
+    console.log("serverDiskSelect", $('#serverDisk option:selected').val(), $('#serverDisk option:selected').text());
+    await browseserverpath($('#serverDisk option:selected').text());
+}
+
 $('#btndownload').click(async function() {
     name = $('#serverpath').val();
     console.log('serverpath', name);

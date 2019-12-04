@@ -9,6 +9,8 @@ type CHandler interface {
 
 	CDownloadheadHandle(data []byte)
 	CDownloadbodyHandle(data []byte)
+
+	CListdisk(data []byte)
 }
 
 type SHandler interface {
@@ -23,4 +25,6 @@ type SHandler interface {
 	SDownloadbodyHandle(data []byte)
 
 	SDownloadbodyNextpackHandle(data []byte)
+
+	SListdisk(data []byte)
 }

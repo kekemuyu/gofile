@@ -24,6 +24,10 @@ const (
 
 	Sdownloadhead
 	Sdownloadbody
+
+	//关于驱动器的操作
+	Clistdisk
+	Slistdisk
 )
 
 type Handler struct {
@@ -50,31 +54,30 @@ func (h *Handler) HandleLoop() {
 			log.Println("read head err:", err)
 			continue
 		}
-		
+
 		log.Println(tmpb)
 		if message, err = msg.Unpack(tmpb); err != nil {
 			log.Println("unpack msg err:", err)
 			continue
 		}
 
-	    log.Println(message)
+		log.Println(message)
 		if message.Datalen > 0 {
 
 			message.Data = make([]byte, message.Datalen)
-			
-			dataP:=0
-			for dataP<int(message.Datalen){
+
+			dataP := 0
+			for dataP < int(message.Datalen) {
 				n, err = h.Rwc.Read(message.Data[dataP:])
-				if n>0{
-					dataP+=n
+				if n > 0 {
+					dataP += n
 				}
-				if err!=nil {
+				if err != nil {
 					log.Println("read data err:", err)
 					break
 				}
 			}
-			
-			
+
 			log.Println(message)
 			go h.parseMsg(message)
 		} else {
@@ -110,38 +113,40 @@ func (h *Handler) parseMsg(msg msg.Msg) {
 		log.Println("Slist")
 		h.Chandler.CListHandle(msg.Data)
 	case Clistuppage:
-		 log.Println("Clistuppage")
+		log.Println("Clistuppage")
 		h.Shandler.SListUppageHandle(msg.Data)
 	case Slistuppage:
-		 log.Println("Slistuppage")
+		log.Println("Slistuppage")
 		h.Chandler.CListUppageHandle(msg.Data)
 
 	case Cuploadhead:
-		 log.Println("Cuploadhead")
+		log.Println("Cuploadhead")
 		h.Shandler.SUploadheadHandle(msg.Data)
 	case Cuploadbody:
-		 log.Println("Cuploadbody")
+		log.Println("Cuploadbody")
 		h.Shandler.SUploadbodyHandle(msg.Data)
 	case Suploadbody_nextpack: //服务端收到数据后，发送响应到客户端
-		 log.Println("Suploadbody")
+		log.Println("Suploadbody")
 		h.Chandler.CUploadbodyNextpackHandle(msg.Data)
 
 	case Cdownloadhead:
-		 log.Println("Cdownloadhead")
+		log.Println("Cdownloadhead")
 		h.Shandler.SDownloadheadHandle(msg.Data)
 	case Cdownloadbody:
-		 log.Println("Cdownloadbody")
+		log.Println("Cdownloadbody")
 		go h.Shandler.SDownloadbodyHandle(msg.Data)
 	case Sdownloadhead:
 
-		 log.Println("Sdownloadhead")
+		log.Println("Sdownloadhead")
 		h.Chandler.CDownloadheadHandle(msg.Data)
 	case Sdownloadbody:
-		 log.Println("Sdownloadbody")
+		log.Println("Sdownloadbody")
 		h.Chandler.CDownloadbodyHandle(msg.Data)
 	case Cdownloadbody_nextpack:
-		 log.Println("Cdownloadbody_nextpack")
+		log.Println("Cdownloadbody_nextpack")
 		h.Shandler.SDownloadbodyNextpackHandle(msg.Data)
+	case Clistdisk:
+		h.Shandler.SListdisk(msg.Data)
 	}
 
 }
