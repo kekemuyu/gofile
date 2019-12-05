@@ -59,11 +59,12 @@ func (c *Comtask) CListHandle(data []byte) {
 		log.Error(err)
 		return
 	}
-	files := filemap["value"]
 
-	jsStr := `$("#serverfiles").find("li").remove()`
+	log.Debug(filemap)
+	files := filemap["value"]
+	jsStr := fmt.Sprintf(`$('#serverpath').val("%s");$("#serverfiles").find("li").remove()`, files[0])
 	Defaultweb.UI.Eval(jsStr)
-	for _, f := range files {
+	for _, f := range files[1:] {
 		log.Debug(f)
 
 		jsStr := fmt.Sprintf(`$('#serverfiles').append("<li>%s</li>")`, f)
@@ -79,11 +80,13 @@ func (c *Comtask) CListUppageHandle(data []byte) {
 		log.Error(err)
 		return
 	}
+	log.Debug(filemap)
 	files := filemap["value"]
 
-	jsStr := `$("#serverfiles").find("li").remove()`
+	jsStr := fmt.Sprintf(`$('#serverpath').val("%s");$("#serverfiles").find("li").remove()`, files[0])
+
 	Defaultweb.UI.Eval(jsStr)
-	for _, f := range files {
+	for _, f := range files[1:] {
 		log.Debug(f)
 
 		jsStr := fmt.Sprintf(`$('#serverfiles').append("<li>%s</li>")`, f)

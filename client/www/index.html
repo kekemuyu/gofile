@@ -99,7 +99,7 @@ $(function() {
             console.log(obj.text());
             selectname = obj.text();
 
-            $('#clientpath').val(selectname);
+            // $('#clientpath').val(selectname);
         }
     })
 
@@ -132,7 +132,7 @@ $(function() {
             console.log(obj.text());
             selectname2 = obj.text();
 
-            $('#serverpath').val(selectname2);
+            // $('#serverpath').val(selectname2);
         }
     })
 
@@ -204,9 +204,9 @@ $('#btnComClose').click(function() {
 });
 
 //客户端操作
-function clientDiskSelect() {
+async function clientDiskSelect() {
     console.log("clientDisk", $('#clientDisk option:selected').val(), $('#clientDisk option:selected').text());
-    await browseclientpath($('#clientDisk option:selected').text());
+    await browseclientpath("disk"+$('#clientDisk option:selected').text());
 }
 
 $('#btnPageup').click(async function() {
@@ -220,9 +220,9 @@ $('#btnupload').click(async function() {
 
 
 //远端操作
-function serverDiskSelect() {
+async function serverDiskSelect() {
     console.log("serverDiskSelect", $('#serverDisk option:selected').val(), $('#serverDisk option:selected').text());
-    await browseserverpath($('#serverDisk option:selected').text());
+    await browseserverpath("disk"+$('#serverDisk option:selected').text());
 }
 
 $('#btndownload').click(async function() {

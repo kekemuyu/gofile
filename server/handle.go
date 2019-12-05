@@ -1,3 +1,5 @@
+// +build linux
+
 package main
 
 import (
@@ -6,7 +8,6 @@ import (
 	"gofile/handler"
 	"gofile/msg"
 	"gofile/util"
-	"runtime"
 
 	"io/ioutil"
 
@@ -46,19 +47,22 @@ func (c Comtask) SListHandle(data []byte) {
 			curpath += string(data)
 		}
 	}
-
+	dataStr := string(data)
+	if len(dataStr) > 4 {
+		if dataStr[:4] == "disk" {
+			curpath = dataStr[4:]
+		}
+	}
 	log.Println(curpath)
 
 	files, err := ioutil.ReadDir(curpath)
 	if err != nil {
 		log.Println(err)
-		config.Cfg.Section("file2").Key("serverpath").SetValue(config.GetRootdir())
-
-		config.Save()
 		return
 	}
 
 	var filenames []string
+	filenames = append(filenames, curpath)
 	for _, f := range files {
 		filenames = append(filenames, f.Name())
 		log.Println(f.Name())
@@ -67,6 +71,7 @@ func (c Comtask) SListHandle(data []byte) {
 
 	filemap := make(map[string][]string)
 	filemap["value"] = filenames
+	log.Println(filemap)
 
 	bs, err := json.Marshal(filemap)
 	if err != nil {
@@ -99,6 +104,7 @@ func (c Comtask) SListUppageHandle(data []byte) {
 		files, _ := ioutil.ReadDir(curpath)
 
 		var filenames []string
+		filenames = append(filenames, curpath)
 		for _, f := range files {
 			filenames = append(filenames, f.Name())
 			log.Println(f.Name())
@@ -107,7 +113,7 @@ func (c Comtask) SListUppageHandle(data []byte) {
 
 		filemap := make(map[string][]string)
 		filemap["value"] = filenames
-
+		log.Println(filemap)
 		bs, err := json.Marshal(filemap)
 		if err != nil {
 			log.Println(err)
@@ -238,16 +244,5 @@ func (c *Comtask) SDownloadbodyNextpackHandle(data []byte) {
 }
 
 func (c *Comtask) SListdisk(data []byte) {
-	if runtime.GOOS != "windows" {
-		return
-	}
-	dinfo := util.GetDiskInfo()
-	bs, _ := json.Marshal(dinfo)
-	message := msg.Msg{
-		Id:      handler.Slistdisk,
-		Datalen: uint32(len(bs)),
-		Data:    bs,
-	}
-	log.Println(message)
-	hlr.Sendmsg(message)
+
 }

@@ -1,3 +1,5 @@
+// +build linux
+
 package main
 
 import (
@@ -9,8 +11,6 @@ import (
 	"gofile/util"
 	"io/ioutil"
 	"os"
-	"runtime"
-	"strconv"
 
 	// "path/filepath"
 
@@ -47,7 +47,6 @@ func Sendmsg(message msg.Msg) {
 }
 
 func Browseclientpath(bpath string) byte {
-
 	curpath := config.Cfg.Section("file1").Key("clientpath").MustString(config.GetRootdir())
 	log.Debug(curpath)
 
@@ -59,15 +58,19 @@ func Browseclientpath(bpath string) byte {
 		}
 
 	}
+	if len(bpath) > 4 {
+		if bpath[:4] == "disk" {
+			curpath = bpath[4:]
+		}
+	}
+
 	log.Debug(curpath)
 
 	s, err := os.Stat(curpath)
 	if err != nil {
 		log.Error(err)
 		log.Debug(config.GetRootdir())
-		config.Cfg.Section("file1").Key("clientpath").SetValue(config.GetRootdir())
 
-		config.Save()
 		return 3
 	}
 	if s.IsDir() {
@@ -145,17 +148,5 @@ func Run() {
 }
 
 func GetClientDisk() {
-	log.Debug("GetClientDisk", runtime.GOOS)
-	if runtime.GOOS != "windows" {
-		return
-	}
-	dinfo := util.GetDiskInfo()
-	if len(dinfo) <= 0 {
-		return
-	}
-	log.Debug(dinfo)
-	for k, v := range dinfo {
-		jsStr := fmt.Sprintf(`$('#clientDisk').append("<option value=%s>%s</option>")`, strconv.Itoa(k), v)
-		Defaultweb.UI.Eval(jsStr)
-	}
+
 }
