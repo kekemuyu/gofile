@@ -52,13 +52,11 @@
             </div>
         </div> -->
         <select id="clientDisk" style="width: 80px" onChange="clientDiskSelect()">
-           
         </select>
         <input id="clientpath" type="text" name="">
         <button class=" btn btn-success " type="button" id="btnPageup">向上</button>
         <button class=" btn btn-success " type="button" id="btnupload">上传</button>
         <select id="serverDisk" style="width: 80px" onChange="serverDiskSelect()">
-        
         </select>
         <input type="text" id="serverpath" name="">
         <button class=" btn btn-success " type="button" id="btnserverPageup">向上</button>
@@ -71,6 +69,21 @@
             <div class="col-sm-6" style="border:solid;height: 300px;overflow-y: auto;">
                 <ul class="list-group" id="serverfiles" style="list-style-type:none">
                 </ul>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-sm-1">
+                <label id="curfilename">文件名</label>
+            </div>
+            <div class="col-sm-8">
+                <div class="progress">
+                    <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 90%;" id="process">90%
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3" >
+               <label><em id="speed">122</em>/s</label> 
             </div>
         </div>
     </div>
@@ -147,7 +160,7 @@ $(function() {
         await browseserverpath(selectname2);
     })
 
-    
+
     // $('#filesgroup').on("click", "li", function() {
     //     $('#filesgroup').find('li').css('background-color', 'white');
     //     $(this).css('background-color', '#e2f5ff');
@@ -206,7 +219,7 @@ $('#btnComClose').click(function() {
 //客户端操作
 async function clientDiskSelect() {
     console.log("clientDisk", $('#clientDisk option:selected').val(), $('#clientDisk option:selected').text());
-    await browseclientpath("disk"+$('#clientDisk option:selected').text());
+    await browseclientpath("disk" + $('#clientDisk option:selected').text());
 }
 
 $('#btnPageup').click(async function() {
@@ -222,13 +235,11 @@ $('#btnupload').click(async function() {
 //远端操作
 async function serverDiskSelect() {
     console.log("serverDiskSelect", $('#serverDisk option:selected').val(), $('#serverDisk option:selected').text());
-    await browseserverpath("disk"+$('#serverDisk option:selected').text());
+    await browseserverpath("disk" + $('#serverDisk option:selected').text());
 }
 
 $('#btndownload').click(async function() {
-    name = $('#serverpath').val();
-    console.log('serverpath', name);
-    await download(name);
+    await download(selectname2);
 });
 
 $('#btnserverPageup').click(async function() {

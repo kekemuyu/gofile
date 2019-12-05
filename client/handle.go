@@ -24,6 +24,7 @@ type Comtask struct {
 	Downloadfileoff       int64
 	Uploadbody_nextpackch chan bool
 	Filehandler           *os.File
+	Progress              Tprocess
 }
 
 var DefaultComtask = Comtask{
@@ -145,6 +146,11 @@ func (c *Comtask) CDownloadbodyHandle(data []byte) {
 	log.Debug(c.Downloadfileoff, c.Size)
 	c.Filehandler.WriteAt(data, c.Downloadfileoff)
 	c.Downloadfileoff += int64(len(data))
+	c.Progress.Filename = c.Name
+	c.Progress.Filesize = c.Size
+	c.Progress.Runsize = c.Downloadfileoff
+
+	go Disprocessbar(c.Progress) //进度条更新
 	if c.Downloadfileoff >= c.Size {
 		c.Filehandler.Close()
 		log.Debug("download complete")
