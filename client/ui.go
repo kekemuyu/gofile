@@ -40,6 +40,7 @@ func (m *Myweb) Run() {
 	})
 
 	ui.Bind("opencom", Opencom)
+	ui.Bind("closecom", Closecom)
 	ui.Bind("getclientdisk", GetClientDisk)
 	ui.Bind("getserverdisk", DefaultComtask.GetServerDisk)
 	ui.Bind("browseclientpath", Browseclientpath)

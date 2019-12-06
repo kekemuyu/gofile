@@ -17,8 +17,18 @@
                         <img src="img/rtlogo.png" width="25px" height="25px" onclick="menu()">
                     </a>-->
                 <text class="navbar-text" style="color: white;font-size: 20px;">gofile文件管理器</text>
-                <text id="linkStat" class="navbar-text" style="color: white;font-size: 20px;"></text>
             </div>
+            <!-- <div class="collapse navbar-collapse" style="margin-left:500px;">
+                <ul class="nav navbar-nav">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" style="color: white;font-size: 20px;">配置 <span class="caret"></span></a>
+                        <ul class="dropdown-menu" style="background-color: #009966;">
+                            <li><a style="color: white" id="comset">串口配置</a></li>
+                            <li><a style="color: white" id="netset">网口配置</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div> -->
         </div>
     </nav>
     <div id="contentDis " style="padding-top: 100px; margin-left: 20px">
@@ -71,23 +81,39 @@
                 </ul>
             </div>
         </div>
-        <hr>
         <div class="row">
-            <div class="col-sm-1">
+            <div class="col-sm-2">
                 <label id="curfilename">文件名</label>
             </div>
-            <div class="col-sm-8">
+            <div class="col-sm-7">
                 <div class="progress">
-                    <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 90%;" id="process">90%
+                    <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 0%;" id="process">0%
                     </div>
                 </div>
             </div>
-            <div class="col-sm-3" >
-               <label><em id="speed">122</em>/s</label> 
+            <div class="col-sm-3">
+                <label><em id="speed">122</em>/s</label>
             </div>
         </div>
     </div>
 </body>
+<!-- Modal -->
+<!-- <div class="modal fade" id="comsetModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">串口配置</h4>
+            </div>
+            <div class="modal-body">
+                <input id="exportPath" type="file" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">取消</button>
+                <button id="btnOpen" type="button" class="btn btn-primary">打开</button>
+            </div>
+        </div>
+    </div>
+</div> -->
 <script type="text/javascript">
 var selectname = "";
 var selectname2 = "";
@@ -213,7 +239,7 @@ $('#btnComOpen').click(async function() {
 
 $('#btnComClose').click(function() {
     console.log('btnclose');
-
+    ok = await closecom()
 });
 
 //客户端操作
