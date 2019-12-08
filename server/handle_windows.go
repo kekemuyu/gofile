@@ -10,9 +10,8 @@ import (
 	"gofile/util"
 	"runtime"
 
+	"gofile/log"
 	"io/ioutil"
-
-	"log"
 	"os"
 	//log "github.com/donnie4w/go-logger/logger"
 )

@@ -6,12 +6,11 @@ import (
 	"encoding/json"
 	"gofile/config"
 	"gofile/handler"
+	"gofile/log"
 	"gofile/msg"
 	"gofile/util"
-
 	"io/ioutil"
 
-	"log"
 	"os"
 	//log "github.com/donnie4w/go-logger/logger"
 )
@@ -36,7 +35,7 @@ var DefaultComtask = Comtask{
 
 //将当前目录文件发送给客户端
 func (c Comtask) SListHandle(data []byte) {
-	log.Println(data)
+	log.Debug(data)
 	curpath := config.Cfg.Section("file2").Key("serverpath").MustString(config.GetRootdir())
 	if (len(data) == 4) && (string(data[:4]) == "init") {
 
@@ -53,11 +52,11 @@ func (c Comtask) SListHandle(data []byte) {
 			curpath = dataStr[4:]
 		}
 	}
-	log.Println(curpath)
+	log.Debug(curpath)
 
 	files, err := ioutil.ReadDir(curpath)
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 		return
 	}
 
@@ -65,17 +64,17 @@ func (c Comtask) SListHandle(data []byte) {
 	filenames = append(filenames, curpath)
 	for _, f := range files {
 		filenames = append(filenames, f.Name())
-		log.Println(f.Name())
+		log.Debug(f.Name())
 
 	}
 
 	filemap := make(map[string][]string)
 	filemap["value"] = filenames
-	log.Println(filemap)
+	log.Debug(filemap)
 
 	bs, err := json.Marshal(filemap)
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 
 		return
 	}
@@ -99,7 +98,7 @@ func (c Comtask) SListUppageHandle(data []byte) {
 
 		curpath = util.GetParentDirectory(curpath)
 
-		log.Println(curpath)
+		log.Debug(curpath)
 
 		files, _ := ioutil.ReadDir(curpath)
 
@@ -107,16 +106,16 @@ func (c Comtask) SListUppageHandle(data []byte) {
 		filenames = append(filenames, curpath)
 		for _, f := range files {
 			filenames = append(filenames, f.Name())
-			log.Println(f.Name())
+			log.Debug(f.Name())
 
 		}
 
 		filemap := make(map[string][]string)
 		filemap["value"] = filenames
-		log.Println(filemap)
+		log.Debug(filemap)
 		bs, err := json.Marshal(filemap)
 		if err != nil {
-			log.Println(err)
+			log.Error(err)
 			return
 		}
 
@@ -138,13 +137,13 @@ func (c *Comtask) SUploadheadHandle(data []byte) {
 	var fhead FileHead
 	var err error
 	if err = json.Unmarshal(data, &fhead); err != nil {
-		log.Println(err)
+		log.Debug(err)
 	}
-	log.Println(fhead)
+	log.Debug(fhead)
 	curpath := config.Cfg.Section("file2").Key("serverpath").MustString(config.GetRootdir())
 	path := curpath + `/` + fhead.Name
 	if c.Handler, err = os.Create(path); err != nil {
-		log.Println(err)
+		log.Debug(err)
 	}
 	c.Name = fhead.Name
 	c.Size = fhead.Size
@@ -161,10 +160,10 @@ func (c *Comtask) SUploadbodyHandle(data []byte) {
 	hlr.Sendmsg(message)
 	c.Handler.WriteAt(data, c.Uploadfileoff)
 	c.Uploadfileoff += int64(len(data))
-	log.Println(c.Uploadfileoff, c.Size)
+	log.Debug(c.Uploadfileoff, c.Size)
 	if c.Uploadfileoff >= c.Size {
 		c.Handler.Close()
-		log.Println("upload complete")
+		log.Debug("upload complete")
 		return
 	}
 
@@ -176,12 +175,12 @@ func (c *Comtask) SDownloadheadHandle(data []byte) {
 	var err error
 	c.Handler, err = os.Open(path)
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 		return
 	}
 	fileinfo, err := os.Stat(path)
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 		return
 	}
 
@@ -191,14 +190,14 @@ func (c *Comtask) SDownloadheadHandle(data []byte) {
 	}
 	c.Name = fhead.Name
 	c.Size = fhead.Size
-	log.Println(fhead)
+	log.Debug(fhead)
 	bs, _ := json.Marshal(fhead)
 	message := msg.Msg{
 		Id:      handler.Sdownloadhead,
 		Datalen: uint32(len(bs)),
 		Data:    bs,
 	}
-	log.Println(message)
+	log.Debug(message)
 	hlr.Sendmsg(message)
 }
 
@@ -206,7 +205,7 @@ func (c *Comtask) SDownloadbodyHandle(data []byte) {
 	defer c.Handler.Close()
 	blocksize := c.Size / 1024
 	lastsize := c.Size % 1024
-	log.Println(blocksize, lastsize)
+	log.Debug(blocksize, lastsize)
 
 	outbytes := make([]byte, 1024)
 
@@ -218,12 +217,12 @@ func (c *Comtask) SDownloadbodyHandle(data []byte) {
 	for i := int64(0); i < blocksize; i++ {
 		_, err := c.Handler.ReadAt(outbytes, i*1024)
 		if err != nil {
-			log.Println(err)
+			log.Error(err)
 			return
 		}
 		message.Data = outbytes
 		hlr.Sendmsg(message)
-		log.Println(i)
+		log.Debug(i)
 		<-c.Downloadbody_nextpackch
 	}
 

@@ -213,6 +213,8 @@ func (c *Comtask) Upload(name string) {
 		Id:      handler.Cuploadbody,
 		Datalen: 1024,
 	}
+	c.Progress.Filename = fhead.Name
+	c.Progress.Filesize = fhead.Size
 	for i := int64(0); i < blocksize; i++ {
 		_, err = file.ReadAt(outbytes, i*1024)
 		if err != nil {
@@ -223,13 +225,21 @@ func (c *Comtask) Upload(name string) {
 		hlr.Sendmsg(message)
 		<-c.Uploadbody_nextpackch
 		log.Debug(i)
+
+		c.Progress.Runsize = i * 1024
+
+		go Disprocessbar(c.Progress) //进度条更新
 	}
+
 	n, _ := file.ReadAt(outbytes, blocksize*1024)
 	if n > 0 {
 		message.Datalen = uint32(lastsize)
 		message.Data = outbytes[:lastsize]
 		hlr.Sendmsg(message)
 	}
+	c.Progress.Runsize = fhead.Size
+
+	go Disprocessbar(c.Progress) //进度条更新
 
 }
 

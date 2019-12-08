@@ -1,6 +1,10 @@
 //go:generate go run -tags generate gen.go
 package main
 
+import (
+	_ "gofile/log"
+)
+
 // "github.com/donnie4w/go-logger/logger"
 
 func main() {

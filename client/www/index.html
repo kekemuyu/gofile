@@ -117,12 +117,16 @@
 <script type="text/javascript">
 var selectname = "";
 var selectname2 = "";
+var comstat = false;
 
 $(function() {
     var isdb;
     //客户端
     $('#clientfiles').on("click", "li", function() {
-
+        if (comstat == false) {
+            alert("请打开串口");
+            return ;
+        }
         isdb = false;
         window.setTimeout(cc, 300);
 
@@ -143,7 +147,10 @@ $(function() {
     })
 
     $('#clientfiles').on("dblclick", "li", async function() {
-
+        if (comstat == false) {
+            alert("请打开串口");
+            return;
+        }
         isdb = true;
         $('#clientfiles').find('li').css('background-color', 'white');
         $(this).css('background-color', '#e2f5ff');
@@ -155,7 +162,10 @@ $(function() {
 
     //远端
     $('#serverfiles').on("click", "li", function() {
-
+        if (comstat == false) {
+            alert("请打开串口");
+            return;
+        }
         isdb = false;
         window.setTimeout(cc, 300);
 
@@ -176,7 +186,10 @@ $(function() {
     })
 
     $('#serverfiles').on("dblclick", "li", async function() {
-
+        if (comstat == false) {
+            alert("请打开串口");
+            return;
+        }
         isdb = true;
         $('#serverfiles').find('li').css('background-color', 'white');
         $(this).css('background-color', '#e2f5ff');
@@ -208,6 +221,9 @@ $(function() {
 
 
 //串口操作
+
+
+
 $('#btnComOpen').click(async function() {
 
     Comnum = $('#comNum').val();
@@ -230,6 +246,7 @@ $('#btnComOpen').click(async function() {
 
         await getclientdisk(); //更新磁盘
         await getserverdisk();
+        comstat = true;
     } else {
 
         alert('打开串口失败');
@@ -237,22 +254,35 @@ $('#btnComOpen').click(async function() {
 
 });
 
-$('#btnComClose').click(function() {
+$('#btnComClose').click(async function() {
     console.log('btnclose');
-    ok = await closecom()
+    await closecom();
+    comstat = false;
 });
 
 //客户端操作
 async function clientDiskSelect() {
+    if (comstat == false) {
+        alert("请打开串口");
+        return;
+    }
     console.log("clientDisk", $('#clientDisk option:selected').val(), $('#clientDisk option:selected').text());
     await browseclientpath("disk" + $('#clientDisk option:selected').text());
 }
 
 $('#btnPageup').click(async function() {
+    if (comstat == false) {
+        alert("请打开串口");
+        return;
+    }
     await browseclientuppage();
 });
 
 $('#btnupload').click(async function() {
+    if (comstat == false) {
+        alert("请打开串口");
+        return;
+    }
     console.log('btnupload');
     await upload(selectname);
 });
@@ -260,15 +290,27 @@ $('#btnupload').click(async function() {
 
 //远端操作
 async function serverDiskSelect() {
+    if (comstat == false) {
+        alert("请打开串口");
+        return;
+    }
     console.log("serverDiskSelect", $('#serverDisk option:selected').val(), $('#serverDisk option:selected').text());
     await browseserverpath("disk" + $('#serverDisk option:selected').text());
 }
 
 $('#btndownload').click(async function() {
+    if (comstat == false) {
+        alert("请打开串口");
+        return;
+    }
     await download(selectname2);
 });
 
 $('#btnserverPageup').click(async function() {
+    if (comstat == false) {
+        alert("请打开串口");
+        return;
+    }
     await browseserverpageup();
 });
 </script>

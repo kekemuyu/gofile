@@ -28,6 +28,7 @@ const (
 
 func init() {
 	//指定是否控制台打印，默认为true
+
 	logger.SetConsole(Log_console)
 	//指定日志文件备份方式为文件大小的方式
 	//第一个参数为日志文件存放目录
@@ -53,20 +54,4 @@ func init() {
 	//	logger.Warn("Warn>>>>>>>>>>>>>>>>>>>>>>>>>" + strconv.Itoa(i))
 	//	logger.Error("Error>>>>>>>>>>>>>>>>>>>>>>>>>" + strconv.Itoa(i))
 	//	logger.Fatal("Fatal>>>>>>>>>>>>>>>>>>>>>>>>>" + strconv.Itoa(i))
-}
-
-func Debug(v ...interface{}) {
-	logger.Debug(v...)
-}
-func Info(v ...interface{}) {
-	logger.Info(v...)
-}
-func Warn(v ...interface{}) {
-	logger.Warn(v...)
-}
-func Error(v ...interface{}) {
-	logger.Error(v...)
-}
-func Fatal(v ...interface{}) {
-	logger.Fatal(v...)
 }

@@ -35,8 +35,11 @@ func Opencom(comnum string, baudrate int) bool {
 	}
 	log.Debug("Opencom:", hlr)
 	go hlr.HandleLoop()
-	go Run()
 	return true
+}
+
+func Closecom() {
+	hlr.Rwc.Close()
 }
 
 func Sendmsg(message msg.Msg) {
@@ -129,23 +132,6 @@ func Browseclientuppage() {
 	config.Cfg.Section("file1").Key("clientpath").SetValue(curpath)
 
 	config.Save()
-
-}
-
-func Run() {
-	select {
-	case listdir := <-hlr.Listch:
-		log.Debug(listdir)
-		jsStr1 := `$("#downfilesgroup").find("li").remove()`
-		Defaultweb.UI.Eval(jsStr1)
-		for _, f := range listdir {
-			log.Debug(f)
-
-			jsStr := fmt.Sprintf(`$('#downfilesgroup').append("<li>%s</li>")`, f)
-			Defaultweb.UI.Eval(jsStr)
-		}
-
-	}
 
 }
 
