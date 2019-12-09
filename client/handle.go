@@ -265,6 +265,8 @@ func (c *Comtask) CListdisk(data []byte) {
 	if err != nil {
 		return
 	}
+	jsStr := `$('#serverDisk').find("option").remove()`
+	Defaultweb.UI.Eval(jsStr)
 	if len(dinfo) > 0 {
 		for k, v := range dinfo {
 			jsStr := fmt.Sprintf(`$('#serverDisk').append("<option value=%s>%s</option>")`, strconv.Itoa(k), v)

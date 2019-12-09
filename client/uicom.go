@@ -1,5 +1,3 @@
-// +build linux
-
 package main
 
 import (
@@ -134,6 +132,21 @@ func Browseclientuppage() {
 	config.Save()
 
 }
-func GetClientDisk() {
 
+func GetClientDisk() {
+	log.Debug("GetClientDisk", runtime.GOOS)
+	if runtime.GOOS != "windows" {
+		return
+	}
+	dinfo := util.GetDiskInfo()
+	if len(dinfo) <= 0 {
+		return
+	}
+	log.Debug(dinfo)
+	jsStr := `$('#clientDisk').find("option").remove()`
+	Defaultweb.UI.Eval(jsStr)
+	for k, v := range dinfo {
+		jsStr := fmt.Sprintf(`$('#clientDisk').append("<option value=%s>%s</option>")`, strconv.Itoa(k), v)
+		Defaultweb.UI.Eval(jsStr)
+	}
 }

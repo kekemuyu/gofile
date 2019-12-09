@@ -1,16 +1,15 @@
-// +build linux
-
 package main
 
 import (
 	"encoding/json"
 	"gofile/config"
 	"gofile/handler"
-	"gofile/log"
 	"gofile/msg"
 	"gofile/util"
-	"io/ioutil"
+	"runtime"
 
+	"gofile/log"
+	"io/ioutil"
 	"os"
 	//log "github.com/donnie4w/go-logger/logger"
 )
@@ -57,6 +56,7 @@ func (c Comtask) SListHandle(data []byte) {
 	files, err := ioutil.ReadDir(curpath)
 	if err != nil {
 		log.Error(err)
+
 		return
 	}
 
@@ -71,7 +71,6 @@ func (c Comtask) SListHandle(data []byte) {
 	filemap := make(map[string][]string)
 	filemap["value"] = filenames
 	log.Debug(filemap)
-
 	bs, err := json.Marshal(filemap)
 	if err != nil {
 		log.Error(err)
@@ -137,13 +136,13 @@ func (c *Comtask) SUploadheadHandle(data []byte) {
 	var fhead FileHead
 	var err error
 	if err = json.Unmarshal(data, &fhead); err != nil {
-		log.Debug(err)
+		log.Error(err)
 	}
 	log.Debug(fhead)
 	curpath := config.Cfg.Section("file2").Key("serverpath").MustString(config.GetRootdir())
 	path := curpath + `/` + fhead.Name
 	if c.Handler, err = os.Create(path); err != nil {
-		log.Debug(err)
+		log.Error(err)
 	}
 	c.Name = fhead.Name
 	c.Size = fhead.Size
@@ -243,5 +242,16 @@ func (c *Comtask) SDownloadbodyNextpackHandle(data []byte) {
 }
 
 func (c *Comtask) SListdisk(data []byte) {
-
+	if runtime.GOOS != "windows" {
+		return
+	}
+	dinfo := util.GetDiskInfo()
+	bs, _ := json.Marshal(dinfo)
+	message := msg.Msg{
+		Id:      handler.Slistdisk,
+		Datalen: uint32(len(bs)),
+		Data:    bs,
+	}
+	log.Debug(message)
+	hlr.Sendmsg(message)
 }
