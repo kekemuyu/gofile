@@ -29,7 +29,6 @@ func Disprocessbar(rtdata Tprocess) {
 
 	jsStr1 := fmt.Sprintf(`$('#curfilename').text("%s");$("#process").css("width","%s");$("#process").text("%s");`, rtdata.Filename, ratestr, ratestr)
 
-	log.Debug(jsStr1)
 	Defaultweb.UI.Eval(jsStr1)
 	if time.Since(btime) >= 1000000000 {
 		btime = time.Now()

@@ -2,15 +2,17 @@ package main
 
 import (
 	"fmt"
-	"gofile/com"
-	"gofile/config"
-	"gofile/handler"
-	"gofile/msg"
-	"gofile/util"
 	"io/ioutil"
 	"os"
 	"runtime"
 	"strconv"
+
+	"github.com/kekemuyu/gofile/config"
+	"github.com/kekemuyu/gofile/handler"
+	"github.com/kekemuyu/gofile/msg"
+	"github.com/kekemuyu/gofile/util"
+
+	"github.com/kekemuyu/gofile/com"
 
 	// "path/filepath"
 

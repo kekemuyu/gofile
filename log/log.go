@@ -1,7 +1,8 @@
 package log
 
 import (
-	"gofile/config"
+	// "fmt"
+	"github.com/kekemuyu/gofile/config"
 
 	"github.com/donnie4w/go-logger/logger"
 )

@@ -3,10 +3,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"gofile/config"
-	"gofile/handler"
-	"gofile/msg"
 	"strconv"
+
+	"github.com/kekemuyu/gofile/config"
+	"github.com/kekemuyu/gofile/handler"
+	"github.com/kekemuyu/gofile/msg"
 
 	"os"
 
@@ -224,7 +225,7 @@ func (c *Comtask) Upload(name string) {
 		message.Data = outbytes
 		hlr.Sendmsg(message)
 		<-c.Uploadbody_nextpackch
-		log.Debug(i)
+		// log.Debug(i)
 
 		c.Progress.Runsize = i * 1024
 
