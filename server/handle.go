@@ -2,11 +2,12 @@ package main
 
 import (
 	"encoding/json"
-	"gofile/config"
-	"gofile/handler"
-	"gofile/msg"
-	"gofile/util"
 	"runtime"
+
+	"github.com/kekemuyu/gofile/config"
+	"github.com/kekemuyu/gofile/handler"
+	"github.com/kekemuyu/gofile/msg"
+	"github.com/kekemuyu/gofile/util"
 
 	"io/ioutil"
 	"os"

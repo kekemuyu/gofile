@@ -2,7 +2,7 @@
 package main
 
 import (
-	_ "github.com/kekemuyu/gofile/log"
+	_ "gofile/log"
 )
 
 // "github.com/donnie4w/go-logger/logger"

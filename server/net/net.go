@@ -2,10 +2,11 @@ package net
 
 import (
 	"bytes"
-	"gofile/msg"
 	"net"
 
-	"gofile/handler"
+	"github.com/kekemuyu/gofile/msg"
+
+	"github.com/kekemuyu/gofile/handler"
 
 	"github.com/donnie4w/go-logger/logger"
 )

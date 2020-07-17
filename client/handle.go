@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/kekemuyu/gofile/config"
-	"github.com/kekemuyu/gofile/handler"
-	"github.com/kekemuyu/gofile/msg"
+	"gofile/config"
+	"gofile/handler"
+	"gofile/msg"
 
 	"os"
 

@@ -2,7 +2,7 @@ package log
 
 import (
 	// "fmt"
-	"github.com/kekemuyu/gofile/config"
+	"gofile/config"
 
 	"github.com/donnie4w/go-logger/logger"
 )

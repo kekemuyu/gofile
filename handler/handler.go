@@ -3,8 +3,8 @@ package handler
 import (
 	"io"
 
-	"github.com/kekemuyu/gofile/msg"
-	"github.com/kekemuyu/gofile/protocol"
+	"gofile/msg"
+	"gofile/protocol"
 	//log "github.com/donnie4w/go-logger/logger"
 )
 

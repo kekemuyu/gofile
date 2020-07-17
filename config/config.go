@@ -4,7 +4,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/kekemuyu/gofile/util"
+	"gofile/util"
 
 	"github.com/donnie4w/go-logger/logger"
 	"github.com/go-ini/ini"

@@ -4,10 +4,11 @@ import (
 	"gofile/config"
 	"gofile/handler"
 
-	"gofile/com"
 	_ "gofile/log"
-	"gofile/server/net"
 	"runtime"
+
+	"gofile/com"
+	"gofile/server/net"
 	// log "github.com/donnie4w/go-logger/logger"
 )
 
