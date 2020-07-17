@@ -1,4 +1,4 @@
-module gofile/client
+module client
 
 go 1.13
 
