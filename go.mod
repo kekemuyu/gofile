@@ -12,5 +12,5 @@ require (
 require (
 	github.com/stretchr/testify v1.8.4 // indirect
 	golang.org/x/net v0.0.0-20200222125558-5a598a2470a0 // indirect
-	golang.org/x/sys v0.0.0-20190215142949-d0b11bdaac8a // indirect
+	golang.org/x/sys v0.1.0 // indirect
 )
