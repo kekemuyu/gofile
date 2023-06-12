@@ -1,14 +1,15 @@
 package main
 
 import (
-	"gofile/config"
-	"gofile/handler"
+	"github.com/kekemuyu/gofile/config"
+	"github.com/kekemuyu/gofile/handler"
 
-	_ "gofile/log"
 	"runtime"
 
-	"gofile/com"
-	"gofile/server/net"
+	_ "github.com/kekemuyu/gofile/log"
+
+	"github.com/kekemuyu/gofile/com"
+	"github.com/kekemuyu/gofile/server/net"
 	// log "github.com/donnie4w/go-logger/logger"
 )
 

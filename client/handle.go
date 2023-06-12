@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strconv"
 
-	"gofile/config"
-	"gofile/handler"
-	"gofile/msg"
+	"github.com/kekemuyu/gofile/config"
+	"github.com/kekemuyu/gofile/handler"
+	"github.com/kekemuyu/gofile/msg"
 
 	"os"
 
@@ -53,7 +53,7 @@ func (c *Comtask) ListUppageServerpath() {
 	hlr.Sendmsg(message)
 }
 
-//更新界面服务端目录
+// 更新界面服务端目录
 func (c *Comtask) CListHandle(data []byte) {
 	filemap := make(map[string][]string)
 	err := json.Unmarshal(data, &filemap)
@@ -74,7 +74,7 @@ func (c *Comtask) CListHandle(data []byte) {
 	}
 }
 
-//更新上一界面服务端目录
+// 更新上一界面服务端目录
 func (c *Comtask) CListUppageHandle(data []byte) {
 	filemap := make(map[string][]string)
 	err := json.Unmarshal(data, &filemap)
@@ -96,7 +96,7 @@ func (c *Comtask) CListUppageHandle(data []byte) {
 	}
 }
 
-//向服务端发送head
+// 向服务端发送head
 func (c *Comtask) DownloadHeadSend(name string) {
 	hlr.Downname = name
 	bs := []byte(name)
@@ -244,7 +244,7 @@ func (c *Comtask) Upload(name string) {
 
 }
 
-//收到服务器响应
+// 收到服务器响应
 func (c *Comtask) CUploadbodyNextpackHandle(data []byte) {
 	c.Uploadbody_nextpackch <- true
 }

@@ -7,12 +7,12 @@ import (
 	"runtime"
 	"strconv"
 
-	"gofile/config"
-	"gofile/handler"
-	"gofile/msg"
-	"gofile/util"
+	"github.com/kekemuyu/gofile/config"
+	"github.com/kekemuyu/gofile/handler"
+	"github.com/kekemuyu/gofile/msg"
+	"github.com/kekemuyu/gofile/util"
 
-	"gofile/com"
+	"github.com/kekemuyu/gofile/com"
 
 	// "path/filepath"
 

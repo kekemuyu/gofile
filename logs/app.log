@@ -9868,3 +9868,19 @@
 2020/06/08 09:32:12 handle.go:146: debug 6144 6256
 2020/06/08 09:32:12 handle.go:156: debug download complete
 2020/06/08 12:18:37 ui.go:86: debug exiting...
+[FATAL]2023/06/11 10:46:03 ui.go:27: websocket.Dial ws://127.0.0.1:62698/devtools/browser/a2114241-2e13-41fe-8d32-13f83b5c29eb: bad status
+[FATAL]2023/06/11 10:46:51 ui.go:27: websocket.Dial ws://127.0.0.1:62712/devtools/browser/6e87378e-6765-4189-bd84-1d9ececcde7e: bad status
+[FATAL]2023/06/11 10:47:12 ui.go:27: websocket.Dial ws://127.0.0.1:62717/devtools/browser/8a2fcbf7-1e37-4122-b247-21c54c2e3da6: bad status
+[FATAL]2023/06/11 10:49:14 ui.go:27: websocket.Dial ws://127.0.0.1:62764/devtools/browser/236f3bfd-1a76-4861-a80f-68e06a6909d9: bad status
+[FATAL]2023/06/11 10:49:38 ui.go:27: EOF
+[FATAL]2023/06/11 10:50:03 ui.go:27: EOF
+[FATAL]2023/06/11 10:50:17 ui.go:27: EOF
+[FATAL]2023/06/11 10:50:47 ui.go:27: EOF
+[FATAL]2023/06/11 10:51:01 ui.go:27: EOF
+[FATAL]2023/06/11 10:51:37 ui.go:27: EOF
+[FATAL]2023/06/11 10:57:56 ui.go:27: EOF
+[FATAL]2023/06/12 22:38:52 ui.go:27: EOF
+[FATAL]2023/06/12 22:46:54 ui.go:27: EOF
+[FATAL]2023/06/12 22:51:39 ui.go:27: websocket.Dial ws://127.0.0.1:62956/devtools/browser/a4772fe9-f1cd-484a-b2c8-0adb896cde08: bad status
+[FATAL]2023/06/12 22:57:50 ui.go:27: websocket.Dial ws://127.0.0.1:63150/devtools/browser/14a9870b-6322-486b-b745-0a2c6a5df495: bad status
+[DEBUG]2023/06/12 22:58:51 ui.go:86: exiting...

@@ -3,8 +3,8 @@ package handler
 import (
 	"io"
 
-	"gofile/msg"
-	"gofile/protocol"
+	"github.com/kekemuyu/gofile/msg"
+	"github.com/kekemuyu/gofile/protocol"
 	//log "github.com/donnie4w/go-logger/logger"
 )
 
@@ -100,7 +100,7 @@ func (h *Handler) Sendmsg(message msg.Msg) {
 	h.Send(bs)
 }
 
-//procol magnage
+// procol magnage
 func (h *Handler) parseMsg(msg msg.Msg) {
 	switch msg.Id {
 
